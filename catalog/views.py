@@ -1,12 +1,13 @@
-from django.shortcuts import render
 from django.http import HttpResponse
+from django.shortcuts import render
+
 from catalog.models import Product
 
 
 # Create your views here.
 def home(request):
     # Берём последние 5 продуктов по полю created_at
-    last_products = Product.objects.order_by('-created_at')[:5]
+    last_products = Product.objects.order_by("-created_at")[:5]
 
     # Выводим данные в консоль сервера (терминал, где запущен runserver)
     print("Последние 5 продуктов:")

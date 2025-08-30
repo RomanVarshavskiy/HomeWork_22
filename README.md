@@ -4,15 +4,25 @@
 - главная страница каталога
 - страница контактов с простой обработкой формы отправки сообщения
 
+Дополнительно:
+- заготовка данных для каталога (через фикстуру и/или management‑команду)
+- админ-панель для управления сущностями проекта
+
 ## Технологии
 - Python 3.13
 - Django 5.2
 - Poetry (управление зависимостями и окружением)
 - Инструменты качества кода: Black, isort, Flake8, MyPy
 
+## Требования
+- Установленный Python 3.13
+- Установленный Poetry
+- База данных по умолчанию — SQLite (ничего дополнительно настраивать не нужно)
+
 ## Быстрый старт
 
 1) Клонирование и установка зависимостей
+
 powershell
 # Windows PowerShell
 poetry install --with lint --no-root
@@ -20,20 +30,49 @@ poetry install --with lint --no-root
 
 2) Переменные окружения  
 Скопируйте файл `.env_template` в `.env` и заполните значения:
-bash
-# .env
-DJANGO_SECRET_KEY=your_secret_key_here DJANGO_DEBUG=True
+- Windows PowerShell:
+powershell Copy-Item .env_template .env
+- macOS/Linux:
+bash cp .env_template .env
+Откройте `.env` и заполните значения:
+
+dotenv SECRET_KEY=your_secret_key_here DEBUG=True NAME=your_name_her
+
 
 3) Миграции и запуск сервера разработки
 powershell poetry run python manage.py migrate poetry run python manage.py runserver
 Сервер будет доступен по адресу http://127.0.0.1:8000/
 
+4) (Опционально) Создание суперпользователя для входа в админ‑пан
+poetry run python manage.py createsuperuser
+
+5) (Опционально) Предзаполнение базы данных тестовыми данными
+
+Вариант A — загрузка из фикстуры:
+poetry run python manage.py loaddata catalog_fixture.json
+
+Вариант B — через специальную management‑команду:
+poetry run python manage.py add_products
+
 ## Полезные URL
 - Главная (каталог): `/`
 - Контакты: `/contacts/`
+- Админ‑панель: `/admin/`
+
+## Команды качества кода
+- Форматирование:
+poetry run isort . poetry run black .
+
+- Линтинг:
+poetry run flake8
+
+- Статическая типизация:
+poetry run mypy .
+
+Настройки инструментов сконфигурированы в `pyproject.toml`.
 
 ## Структура (упрощённо)
-. ├── catalog/ # Приложение каталога (urls, views, templates) ├── manage.py # Точка входа Django ├── pyproject.toml # Зависимости и настройки Poetry/линтеров ├── .env_template # Шаблон переменных окружения └── templates/ ├── home.html └── contacts.html
+. ├── catalog/ # Приложение каталога (urls, views, templates и т.д.) ├── manage.py # Точка входа Django ├── pyproject.toml # Зависимости и настройки Poetry/линтеров ├── .env_template # Шаблон переменных окружения ├── templates/ │ ├── home.html │ └── contacts.html └── catalog_fixture.json # Фикстура с тестовыми данными
 
 
 ## Лицензия

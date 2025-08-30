@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models.fields.related import RelatedField
 
 
 class Product(models.Model):
@@ -62,4 +61,4 @@ class Contact(models.Model):
         verbose_name_plural = "Контакты"
 
     def __str__(self):
-        return f'{self.name}:    {self.phone},  {self.email}'
+        return f"{self.name}:    {self.phone},  {self.email}"
