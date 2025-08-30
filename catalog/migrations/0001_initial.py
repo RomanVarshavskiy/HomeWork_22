@@ -50,12 +50,12 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "image",
+                    "photo",
                     models.ImageField(
                         blank=True,
                         help_text="Загрузите изображение",
                         null=True,
-                        upload_to="catalog/image",
+                        upload_to="catalog/photo",
                         verbose_name="Изображение",
                     ),
                 ),
