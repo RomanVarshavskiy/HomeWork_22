@@ -29,4 +29,6 @@ def contacts(request):
         phone = request.POST.get("phone")
         message = request.POST.get("message")
         return HttpResponse(f"Спасибо {name}. Сообщение успешно отправлено")
-    return render(request, "contacts.html")
+    contacts = Contact.objects.all()  # получаем контакты из БД
+    return render(request, "contacts.html", {"contacts": contacts})
+
