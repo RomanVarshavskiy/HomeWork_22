@@ -1,0 +1,91 @@
+[
+{
+    "model": "catalog.product",
+    "pk": 6,
+    "fields": {
+        "name": "Джинсы",
+        "description": "Класические прямые",
+        "image": "",
+        "category": 5,
+        "price": "94.51",
+        "created_at": "2025-08-29",
+        "updated_at": null
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 7,
+    "fields": {
+        "name": "Майка",
+        "description": "Майка спортивная бесшовная бельевая хлопок",
+        "image": "",
+        "category": 5,
+        "price": "30.84",
+        "created_at": "2025-08-29",
+        "updated_at": null
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 8,
+    "fields": {
+        "name": "Кросовки",
+        "description": "Кросовки беговые",
+        "image": "",
+        "category": 6,
+        "price": "93.42",
+        "created_at": "2025-08-29",
+        "updated_at": null
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 9,
+    "fields": {
+        "name": "Ремень",
+        "description": "Ремень класический кожаный для брюк и джинсов",
+        "image": "",
+        "category": 7,
+        "price": "18.32",
+        "created_at": "2025-08-29",
+        "updated_at": "2025-08-30"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 10,
+    "fields": {
+        "name": "Шарф",
+        "description": "Шараф теплый кашемировый",
+        "image": "",
+        "category": 7,
+        "price": "23.79",
+        "created_at": "2025-08-29",
+        "updated_at": "2025-08-30"
+    }
+},
+{
+    "model": "catalog.category",
+    "pk": 5,
+    "fields": {
+        "name": "Одежда",
+        "description": "Товары для мужчин, женщин и детей"
+    }
+},
+{
+    "model": "catalog.category",
+    "pk": 6,
+    "fields": {
+        "name": "Обувь",
+        "description": "Обувь летняя, зимняя для мужчин, женщин и детей"
+    }
+},
+{
+    "model": "catalog.category",
+    "pk": 7,
+    "fields": {
+        "name": "Аксессуары",
+        "description": "Аксессуары для одежды"
+    }
+}
+]
