@@ -1,4 +1,40 @@
-<header>
-    <h1>RomStore</h1>
-    <p>Добро пожаловать в наш магазин!</p>
-</header>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark shadow-sm">
+    <div class="container">
+        <a href="#" class="navbar-brand d-flex align-items-center">
+            <strong>RomStore</strong>
+        </a>
+        <div class="b-top-wrapper">
+            <div data-fetch-key="search:0" class="fast-search">
+                <div class="fast-search__form">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0">
+                            <!-- SVG-иконка поиска -->
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                 class="bi bi-search text-muted" viewBox="0 0 16 16" aria-hidden="true">
+                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zm-5.242.656a5 5 0 1 1 0-10 5 5 0 0 1 0 10z"/>
+                            </svg>
+                        </span>
+                        <input type="text" tabindex="1"
+                               placeholder="Поиск товара..."
+                               value=""
+                               class="form-control border-start-0 fast-search__input ym-record-keys">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Кнопка бургера для мобильных -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- Ссылки навигации -->
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav ms-auto mb-2 mb-md-0">
+                <li class="nav-item"><a class="nav-link" href="{% url 'catalog:home' %}">Каталог</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Категории</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Покупателю</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'catalog:contacts' %}">Контакты</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
