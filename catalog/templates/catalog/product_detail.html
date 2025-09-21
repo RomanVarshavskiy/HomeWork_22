@@ -1,0 +1,19 @@
+{% extends 'catalog/base.html' %}
+
+{% block title %}Детали товара{% endblock %}
+
+{% block content %}
+<!--{% include 'catalog/header.html' %}-->
+
+
+<div>
+    <h2>{{ product.name }}</h2>
+    {% if product.image %}
+        <img src="{{ product.image.url }}" class="img-fluid mb-3" style="max-width: 300px; height: auto;" alt="{{ product.name }}">
+    {% endif %}
+    <p>Категория: {{ product.category.name }}</p>
+    <p>Описание: {{ product.description }}</p>
+    <p>Дата создания: {{ product.created_at|date:"d M Y" }}</p>
+    <p>Цена: {{ product.price }} р.</p>
+</div>
+{% endblock %}
