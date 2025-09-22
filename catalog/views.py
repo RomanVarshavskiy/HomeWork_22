@@ -1,7 +1,12 @@
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 
+from django.shortcuts import redirect
+from django.utils import timezone
+
 from catalog.models import Product, Contact
+from .forms import ProductForm
+
 
 
 def home(request):
@@ -43,5 +48,23 @@ def contacts(request):
     contacts = Contact.objects.all()  # получаем контакты из БД
     return render(request, "catalog/contacts.html", {"contacts": contacts})
 
-def index(request):
-    return render(request, "catalog/index.html")
+def product_create(request):
+    """
+    Страница создания нового товара.
+    Обрабатывает GET (показ формы) и POST (валидация и сохранение).
+    """
+    if request.method == "POST":
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            product = form.save(commit=False)
+            # проставим даты, если они не заполнены
+            today = timezone.now().date()
+            if not product.created_at:
+                product.created_at = today
+            product.updated_at = today
+            product.save()
+            return redirect("catalog:product_detail", product_id=product.id)
+    else:
+        form = ProductForm()
+
+    return render(request, "catalog/product_form.html", {"form": form})
