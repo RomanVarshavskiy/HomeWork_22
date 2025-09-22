@@ -1,12 +1,10 @@
 from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404
-
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
-from catalog.models import Product, Contact
-from .forms import ProductForm
+from catalog.models import Contact, Product
 
+from .forms import ProductForm
 
 
 def home(request):
