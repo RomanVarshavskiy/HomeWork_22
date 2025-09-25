@@ -1,7 +1,10 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 
-from catalog.models import Product, Contact
+from catalog.models import Contact, Product
+
+from .forms import ProductForm
 
 
 def home(request):
@@ -17,10 +20,21 @@ def home(request):
         print(f"- [{p.id}] {p.name} | создан: {p.created_at} | цена: {p.price}")
 
     # Передаём оба queryset'а в шаблон
-    return render(request, "home.html", {
+    return render(request, "catalog/home.html", {
         "products": products,
         "last_products": last_products,
     })
+
+def products_list(request):
+    products = Product.objects.all()
+    context = {'products': products}
+    return render(request, 'catalog/products_list.html', context)
+
+
+def product_detail(request, product_id):
+    product = get_object_or_404(Product,id=product_id)
+    context = {'product': product}
+    return render(request, 'catalog/product_detail.html', context)
 
 
 def contacts(request):
@@ -30,5 +44,25 @@ def contacts(request):
         message = request.POST.get("message")
         return HttpResponse(f"Спасибо {name}. Сообщение успешно отправлено")
     contacts = Contact.objects.all()  # получаем контакты из БД
-    return render(request, "contacts.html", {"contacts": contacts})
+    return render(request, "catalog/contacts.html", {"contacts": contacts})
 
+def product_create(request):
+    """
+    Страница создания нового товара.
+    Обрабатывает GET (показ формы) и POST (валидация и сохранение).
+    """
+    if request.method == "POST":
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            product = form.save(commit=False)
+            # проставим даты, если они не заполнены
+            today = timezone.now().date()
+            if not product.created_at:
+                product.created_at = today
+            product.updated_at = today
+            product.save()
+            return redirect("catalog:product_detail", product_id=product.id)
+    else:
+        form = ProductForm()
+
+    return render(request, "catalog/product_form.html", {"form": form})
