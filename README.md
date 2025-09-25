@@ -1,4 +1,4 @@
-# Django Project: Skystore (chapter 6)
+# Django Project: Romstore (chapter 6)
 
 Небольшое учебное Django‑приложение с модулем `catalog`, в котором реализованы:
 - главная страница каталога
