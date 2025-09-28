@@ -2,9 +2,9 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
-from catalog.models import Contact, Product
+from catalog.models import Contact, Product, Category
 
-from .forms import ProductForm
+from .forms import ProductForm, CategoryForm
 
 
 def home(request):
@@ -66,3 +66,30 @@ def product_create(request):
         form = ProductForm()
 
     return render(request, "catalog/product_form.html", {"form": form})
+
+
+def categories_list(request):
+    categories = Category.objects.all()
+    context = {'categories': categories}
+    return render(request, 'catalog/categories_list.html', context)
+
+
+def category_detail(request, category_id):
+    category = get_object_or_404(Category,id=category_id)
+    context = {'category': category}
+    return render(request, 'catalog/category_detail.html', context)
+
+def category_create(request, category=None):
+    """
+    Страница создания новой категории товара.
+    Обрабатывает GET (показ формы) и POST (валидация и сохранение).
+    """
+    if request.method == "POST":
+        form = CategoryForm(request.POST, request.FILES)
+        if form.is_valid():
+            category = form.save()
+            return redirect("catalog:category_detail", category_id=category.id)
+    else:
+        form = CategoryForm()
+
+    return render(request, "catalog/category_form.html", {"form": form})

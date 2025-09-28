@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Product
+from .models import Product, Category
 
 
 class ProductForm(forms.ModelForm):
@@ -15,4 +15,14 @@ class ProductForm(forms.ModelForm):
             "price": forms.NumberInput(attrs={"class": "form-control", "step": "0.01"}),
             "created_at": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
             "updated_at": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
+        }
+
+class CategoryForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = ["name", "description", "image"]
+        widgets = {
+            "name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Название"}),
+            "description": forms.Textarea(attrs={"class": "form-control", "rows": 4, "placeholder": "Описание"}),
+            "image": forms.ClearableFileInput(attrs={"class": "form-control"}),
         }

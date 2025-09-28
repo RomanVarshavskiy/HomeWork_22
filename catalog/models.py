@@ -40,6 +40,9 @@ class Category(models.Model):
     description = models.TextField(
         verbose_name="Описание", help_text="Укажите описание категории", null=True, blank=True
     )
+    image = models.ImageField(
+        upload_to="catalog/image", verbose_name="Изображение", help_text="Загрузите изображение", null=True, blank=True
+    )
 
     class Meta:
         verbose_name = "Категория"
