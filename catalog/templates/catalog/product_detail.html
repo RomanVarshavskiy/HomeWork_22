@@ -13,8 +13,8 @@
     <p>Описание: {{ product.description }}</p>
     <p>Дата создания: {{ product.created_at|date:"d M Y" }}</p>
     <p>Цена: {{ product.price }} р.</p>
-    <div class="btn-group">
-        <a class="btn btn-primary" href="{% url 'catalog:products_list' %}">Назад</a>
-    </div>
+    <a href="{% url 'catalog:product_update' product.pk %}" class="btn btn-secondary">Редактировать</a>
+    <a href="{% url 'catalog:product_delete' product.pk %}" class="btn btn-danger">Удалить</a>
+    <a href="{% url 'catalog:products_list' %}" class="btn btn-primary">Вернуться к списку</a>
 </div>
 {% endblock %}

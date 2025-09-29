@@ -11,8 +11,8 @@
     {% endif %}
     <p>Категория: {{ category.name }}</p>
     <p>Описание: {{ category.description }}</p>
-    <div class="btn-group">
-        <a class="btn btn-primary" href="{% url 'catalog:categories_list' %}">Назад</a>
-    </div>
+    <a href="{% url 'catalog:category_update' category.pk %}" class="btn btn-secondary">Редактировать</a>
+    <a href="{% url 'catalog:category_delete' category.pk %}" class="btn btn-danger">Удалить</a>
+    <a href="{% url 'catalog:categories_list' %}" class="btn btn-primary">Вернуться к списку</a>
 </div>
 {% endblock %}

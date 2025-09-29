@@ -1,10 +1,42 @@
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, redirect, render
-from django.utils import timezone
+from django.shortcuts import render
+from django.urls import reverse_lazy
+from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
+from django.views import View
 
 from catalog.models import Contact, Product, Category
 
-from .forms import ProductForm, CategoryForm
+
+class ProductCreateView(CreateView):
+    model = Product
+    fields = ['name', 'description', 'image', 'category', 'price', 'created_at', 'updated_at']
+    template_name = 'catalog/product_form.html'
+    success_url = reverse_lazy('catalog:products_list')
+
+
+class ProductListView(ListView):
+    model = Product
+    template_name = 'catalog/products_list.html'
+    context_object_name = 'products'
+
+
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = 'catalog/product_detail.html'
+    context_object_name = 'product'
+
+
+class ProductUpdateView(UpdateView):
+    model = Product
+    fields = ['name', 'description', 'image', 'category', 'price', 'created_at', 'updated_at']
+    template_name = 'catalog/product_form.html'
+    success_url = reverse_lazy('catalog:products_list')
+
+
+class ProductDeleteView(DeleteView):
+    model = Product
+    template_name = 'catalog/product_confirm_delete.html'
+    success_url = reverse_lazy('catalog:products_list')
 
 
 def home(request):
@@ -25,71 +57,58 @@ def home(request):
         "last_products": last_products,
     })
 
-def products_list(request):
-    products = Product.objects.all()
-    context = {'products': products}
-    return render(request, 'catalog/products_list.html', context)
 
+class ContactsView(ListView):
+    model = Contact
+    template_name = "catalog/contacts.html"
+    context_object_name = "contacts"
 
-def product_detail(request, product_id):
-    product = get_object_or_404(Product,id=product_id)
-    context = {'product': product}
-    return render(request, 'catalog/product_detail.html', context)
-
-
-def contacts(request):
-    if request.method == "POST":
+    def post(self, request, *args, **kwargs):
         name = request.POST.get("name")
         phone = request.POST.get("phone")
         message = request.POST.get("message")
         return HttpResponse(f"Спасибо {name}. Сообщение успешно отправлено")
-    contacts = Contact.objects.all()  # получаем контакты из БД
-    return render(request, "catalog/contacts.html", {"contacts": contacts})
 
-def product_create(request):
-    """
-    Страница создания нового товара.
-    Обрабатывает GET (показ формы) и POST (валидация и сохранение).
-    """
-    if request.method == "POST":
-        form = ProductForm(request.POST, request.FILES)
-        if form.is_valid():
-            product = form.save(commit=False)
-            # проставим даты, если они не заполнены
-            today = timezone.now().date()
-            if not product.created_at:
-                product.created_at = today
-            product.updated_at = today
-            product.save()
-            return redirect("catalog:product_detail", product_id=product.id)
-    else:
-        form = ProductForm()
-
-    return render(request, "catalog/product_form.html", {"form": form})
+#
+# def contacts(request):
+#     if request.method == "POST":
+#         name = request.POST.get("name")
+#         phone = request.POST.get("phone")
+#         message = request.POST.get("message")
+#         return HttpResponse(f"Спасибо {name}. Сообщение успешно отправлено")
+#     contacts = Contact.objects.all()  # получаем контакты из БД
+#     return render(request, "catalog/contacts.html", {"contacts": contacts})
 
 
-def categories_list(request):
-    categories = Category.objects.all()
-    context = {'categories': categories}
-    return render(request, 'catalog/categories_list.html', context)
+
+class CategoryCreateView(CreateView):
+    model = Category
+    fields = ['name', 'description', 'image']
+    template_name = 'catalog/category_form.html'
+    success_url = reverse_lazy('catalog:categories_list')
 
 
-def category_detail(request, category_id):
-    category = get_object_or_404(Category,id=category_id)
-    context = {'category': category}
-    return render(request, 'catalog/category_detail.html', context)
+class CategoryListView(ListView):
+    model = Category
+    template_name = 'catalog/categories_list.html'
+    context_object_name = 'categories'
 
-def category_create(request, category=None):
-    """
-    Страница создания новой категории товара.
-    Обрабатывает GET (показ формы) и POST (валидация и сохранение).
-    """
-    if request.method == "POST":
-        form = CategoryForm(request.POST, request.FILES)
-        if form.is_valid():
-            category = form.save()
-            return redirect("catalog:category_detail", category_id=category.id)
-    else:
-        form = CategoryForm()
 
-    return render(request, "catalog/category_form.html", {"form": form})
+class CategoryDetailView(DetailView):
+    model = Category
+    template_name = 'catalog/category_detail.html'
+    context_object_name = 'category'
+
+
+class CategoryUpdateView(UpdateView):
+    model = Category
+    fields = ['name', 'description', 'image']
+    template_name = 'catalog/category_form.html'
+    success_url = reverse_lazy('catalog:categories_list')
+
+
+class CategoryDeleteView(DeleteView):
+    model = Category
+    template_name = 'catalog/category_confirm_delete.html'
+    success_url = reverse_lazy('catalog:categories_list')
+
