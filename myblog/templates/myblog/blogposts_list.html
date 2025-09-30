@@ -1,0 +1,32 @@
+{% extends 'catalog/base.html' %}
+
+{% block title %}Список статей{% endblock %}
+
+{% block content %}
+{% include 'myblog/include/header.html' %}
+
+<div class="d-flex justify-content-end mb-3">
+    <a href="{% url 'myblog:blogpost_create' %}" class="btn btn-primary">Добавить статью</a>
+</div>
+
+<div class="container">
+    <ul class="list-group">
+        {% for blogpost in blogposts %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <a href="{% url 'myblog:blogpost_detail' blogpost.id %}" class="text-decoration-none text-black">{{ blogpost.title }}</a>
+            {% if blogpost.image %}
+                <a href="{% url 'myblog:blogpost_detail' blogpost.id %}" class="d-inline-block">
+                    <img src="{{ blogpost.image.url }}" class="img-fluid mb-3" alt="{{ blogpost.title }}">
+                </a>
+            {% endif %}
+            <span>
+                <a href="{% url 'myblog:blogpost_update' blogpost.pk %}" class="btn btn-secondary btn-sm mr-2">Редактировать</a>
+                <a href="{% url 'myblog:blogpost_delete' blogpost.pk %}" class="btn btn-danger btn-sm">Удалить</a>
+            </span>
+        </li>
+        {% empty %}
+        <li class="list-group-item">Статьи пока не добавлены.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

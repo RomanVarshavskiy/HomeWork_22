@@ -23,7 +23,7 @@
                         <a href="{% url 'catalog:product_detail' product.id %}" class="d-inline-block">
                             <img src="{{ product.image.url }}" class="img-fluid mb-3" alt="{{ product.name }}">
                         </a>
-                            {% endif %}
+                    {% endif %}
                     <div class="mt-auto">
                         <h1 class="card-title pricing-card-title">{{ product.price }} р.</h1>
                         <ul class="list-unstyled mt-3 mb-4 text-start m-3">

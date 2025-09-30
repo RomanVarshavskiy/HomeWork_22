@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
 from django.views import View
 
@@ -25,12 +25,21 @@ class ProductDetailView(DetailView):
     template_name = 'catalog/product_detail.html'
     context_object_name = 'product'
 
+    def get_object(self, queryset=None):
+        self.object = super().get_object(queryset)
+        self.object.views_counter += 1
+        self.object.save()
+        return self.object
+
 
 class ProductUpdateView(UpdateView):
     model = Product
     fields = ['name', 'description', 'image', 'category', 'price', 'created_at', 'updated_at']
     template_name = 'catalog/product_form.html'
     success_url = reverse_lazy('catalog:products_list')
+
+    def get_success_url(self):
+        return reverse_lazy('catalog:product_detail', args={self.kwargs.get('pk')})
 
 
 class ProductDeleteView(DeleteView):
@@ -69,17 +78,6 @@ class ContactsView(ListView):
         message = request.POST.get("message")
         return HttpResponse(f"Спасибо {name}. Сообщение успешно отправлено")
 
-#
-# def contacts(request):
-#     if request.method == "POST":
-#         name = request.POST.get("name")
-#         phone = request.POST.get("phone")
-#         message = request.POST.get("message")
-#         return HttpResponse(f"Спасибо {name}. Сообщение успешно отправлено")
-#     contacts = Contact.objects.all()  # получаем контакты из БД
-#     return render(request, "catalog/contacts.html", {"contacts": contacts})
-
-
 
 class CategoryCreateView(CreateView):
     model = Category
@@ -105,6 +103,9 @@ class CategoryUpdateView(UpdateView):
     fields = ['name', 'description', 'image']
     template_name = 'catalog/category_form.html'
     success_url = reverse_lazy('catalog:categories_list')
+
+    def get_success_url(self):
+        return reverse('catalog:category_detail', args={self.kwargs.get('pk')})
 
 
 class CategoryDeleteView(DeleteView):
