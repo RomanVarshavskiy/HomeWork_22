@@ -15,9 +15,9 @@
         <li class="list-group-item d-flex justify-content-between align-items-center">
             <a href="{% url 'myblog:blogpost_detail' blogpost.id %}" class="text-decoration-none text-black">{{ blogpost.title }}</a>
             {% if blogpost.image %}
-                <a href="{% url 'myblog:blogpost_detail' blogpost.id %}" class="d-inline-block">
-                    <img src="{{ blogpost.image.url }}" class="img-fluid mb-3" alt="{{ blogpost.title }}">
-                </a>
+            <a href="{% url 'myblog:blogpost_detail' blogpost.id %}" class="d-inline-block">
+                <img src="{{ blogpost.image.url }}" class="img-fluid mb-3" alt="{{ blogpost.title }}">
+            </a>
             {% endif %}
             <span>
                 <a href="{% url 'myblog:blogpost_update' blogpost.pk %}" class="btn btn-secondary btn-sm mr-2">Редактировать</a>

@@ -3,12 +3,15 @@ from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
 
+from django.core.mail import send_mail
+from django.db.models import F
+
 from myblog.models import BlogPost
 
 
 class BlogPostCreateView(CreateView):
     model = BlogPost
-    fields = ['title', 'content', 'preview_image', 'created_at', 'updated_at', 'is_published',  'views_counter']
+    fields = ['title', 'content', 'preview_image', 'created_at', 'updated_at', 'is_published', 'views_counter']
     template_name = 'myblog/blogpost_form.html'
     success_url = reverse_lazy('myblog:blogposts_list')
 
@@ -28,10 +31,19 @@ class BlogPostDetailView(DetailView):
     context_object_name = 'blogpost'
 
     def get_object(self, queryset=None):
-        self.object = super().get_object(queryset)
-        self.object.views_counter += 1
-        self.object.save()
-        return self.object
+        obj = super().get_object(queryset)
+        obj.views_counter += 1
+        obj.save()
+        obj.refresh_from_db(fields=['views_counter'])
+        if obj.views_counter == 100:
+            send_mail(
+                subject='Поздравляем! 100 просмотров статьи',
+                message=f'Статья "{obj.title}" набрала 100 просмотров.',
+                from_email=None,
+                recipient_list=['varshavskiy.mchs@gmail.com'],
+                fail_silently=False,
+            )
+        return obj
 
 
 class BlogPostUpdateView(UpdateView):

@@ -112,4 +112,3 @@ class CategoryDeleteView(DeleteView):
     model = Category
     template_name = 'catalog/category_confirm_delete.html'
     success_url = reverse_lazy('catalog:categories_list')
-

@@ -7,7 +7,8 @@
 <div>
     <h2>{{ blogpost.title }}</h2>
     {% if blogpost.preview_image %}
-        <img src="{{ blogpost.preview_image.url }}" class="img-fluid mb-3" style="max-width: 300px; height: auto;" alt="{{ blogpost.title }}">
+    <img src="{{ blogpost.preview_image.url }}" class="img-fluid mb-3" style="max-width: 300px; height: auto;"
+         alt="{{ blogpost.title }}">
     {% endif %}
     <p>Содержание: {{ blogpost.content }}</p>
     <p>Дата создания: {{ blogpost.created_at|date:"d M Y" }}</p>
