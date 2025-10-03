@@ -35,12 +35,12 @@ class BlogPostDetailView(DetailView):
         obj.views_counter += 1
         obj.save()
         obj.refresh_from_db(fields=['views_counter'])
-        if obj.views_counter == 100:
+        if obj.views_counter == 23:
             send_mail(
-                subject='Поздравляем! 100 просмотров статьи',
-                message=f'Статья "{obj.title}" набрала 100 просмотров.',
+                subject='Поздравляем! 23 просмотров статьи',
+                message=f'Статья "{obj.title}" набрала 23 просмотров.',
                 from_email=None,
-                recipient_list=['varshavskiy.mchs@gmail.com'],
+                recipient_list=['recipient@exemple.com'],
                 fail_silently=False,
             )
         return obj
