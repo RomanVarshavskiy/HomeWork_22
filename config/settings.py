@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "catalog",
+    "myblog",
 ]
 
 MIDDLEWARE = [
@@ -102,3 +103,24 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+# для отправки реальных сообщений
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# для вывода сообщения в терминал
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
+# EMAIL_HOST = <MAIL_HOST> - хост
+# EMAIL_PORT = <MAIL_PORT> - порт
+# EMAIL_USE_TLS = <True>
+# EMAIL_HOST_USER = <MAIL_HOST_USER> - логин
+# EMAIL_HOST_PASSWORD = <MAIL_HOST_PASSWORD> - пароль

@@ -1,0 +1,18 @@
+{% extends 'catalog/base.html' %}
+
+{% block title %}Детали категории{% endblock %}
+
+{% block content %}
+
+<div>
+    <h2>{{ category.name }}</h2>
+    {% if category.image %}
+        <img src="{{ category.image.url }}" class="img-fluid mb-3" style="max-width: 300px; height: auto;" alt="{{ category.name }}">
+    {% endif %}
+    <p>Категория: {{ category.name }}</p>
+    <p>Описание: {{ category.description }}</p>
+    <a href="{% url 'catalog:category_update' category.pk %}" class="btn btn-secondary">Редактировать</a>
+    <a href="{% url 'catalog:category_delete' category.pk %}" class="btn btn-danger">Удалить</a>
+    <a href="{% url 'catalog:categories_list' %}" class="btn btn-primary">Вернуться к списку</a>
+</div>
+{% endblock %}
