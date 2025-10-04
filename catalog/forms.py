@@ -1,10 +1,33 @@
+"""Формы Django для работы с сущностями каталога.
+
+Содержит формы:
+- ProductForm: создание/редактирование товаров.
+- CategoryForm: создание/редактирование категорий.
+
+Обе формы имеют преднастроенные виджеты для удобного ввода данных в админке/шаблонах.
+"""
+
+
 from django import forms
 
 from .models import Product, Category
 
 
 class ProductForm(forms.ModelForm):
+    """Форма создания/редактирования товара.
+
+    Включает основные поля модели Product и кастомные виджеты
+    для удобного ввода текста, чисел, дат и загрузки файлов.
+    """
+
     class Meta:
+        """Конфигурация формы ProductForm.
+
+        Атрибуты:
+            model: Модель, на основе которой строится форма.
+            fields: Поля модели, отображаемые в форме.
+            widgets: Кастомные виджеты для рендеринга элементов ввода.
+        """
         model = Product
         fields = ["name", "description", "image", "category", "price", "created_at", "updated_at"]
         widgets = {
@@ -18,7 +41,20 @@ class ProductForm(forms.ModelForm):
         }
 
 class CategoryForm(forms.ModelForm):
+    """Форма создания/редактирования категории.
+
+    Предоставляет поля и виджеты для ввода названия, описания и загрузки изображения категории.
+    """
+
     class Meta:
+        """Конфигурация формы CategoryForm.
+
+        Атрибуты:
+            model: Модель, используемая для построения формы.
+            fields: Список полей, включённых в форму.
+            widgets: Виджеты для настройки внешнего вида и поведения полей.
+        """
+
         model = Category
         fields = ["name", "description", "image"]
         widgets = {

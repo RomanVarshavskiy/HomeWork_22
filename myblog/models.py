@@ -1,7 +1,14 @@
+"""Модели приложения блога."""
+
+
 from django.db import models
 
 
 class BlogPost(models.Model):
+    """Модель BlogPost с полями для хранения контента, изображений-превью,
+    дат создания/обновления, статуса публикации и счётчика просмотров.
+    """
+
     title = models.CharField(max_length=100, verbose_name="Заголовок", help_text="Введите название заголовка статьи")
     content = models.TextField(verbose_name="Содержимое", help_text="Укажите содержимое статьи", null=True, blank=True)
     preview_image = models.ImageField(
@@ -20,9 +27,18 @@ class BlogPost(models.Model):
                                                 help_text="Укажите количество просмотров")
 
     class Meta:
+        """Метаданные модели.
+
+        Атрибуты:
+           verbose_name: Человекочитаемое имя модели в единственном числе.
+           verbose_name_plural: Имя во множественном числе.
+           ordering: Порядок сортировки по умолчанию (заголовок, дата создания, просмотры).
+        """
+
         verbose_name = "Статья"
         verbose_name_plural = "Статьи"
         ordering = ["title", "created_at", "views_counter"]
 
     def __str__(self):
+        """Строковое представление модели: заголовок публикации."""
         return {self.title}
