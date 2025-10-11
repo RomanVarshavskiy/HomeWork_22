@@ -46,26 +46,23 @@ class ProductForm(forms.ModelForm):
             "updated_at": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
         }
 
-    def clean_name(self):
-        name = self.cleaned_data.get('name').lower()
+    def clean(self):
+        cleaned_data = super().clean()
+        name = (cleaned_data.get('name') or '').lower()
+        description = (cleaned_data.get('description') or '').lower()
         for word in FORBIDDEN_WORDS:
             if word in name:
-                raise ValidationError(f'Наименование товара не может содержать запрещенное слово "{word}"')
-        return self.cleaned_data.get('name')
-
-    def clean_description(self):
-        description = self.cleaned_data.get('description').lower()
-        for word in FORBIDDEN_WORDS:
+                self.add_error('name', f'Наименование товара не может содержать запрещенное слово "{word}"')
             if word in description:
-                raise ValidationError(f'Описание товара не может содержать запрещенное слово "{word}"')
-        return self.cleaned_data.get('description')
+                self.add_error('description', f'Описание товара не может содержать запрещенное слово "{word}"')
+        return cleaned_data
+
 
     def clean_price(self):
         price = self.cleaned_data.get('price')
         if price is not None and price <= 0:
             raise ValidationError('Цена товара не может быть отрицательной')
         return price
-
 
 
 class CategoryForm(forms.ModelForm):
