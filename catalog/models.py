@@ -24,10 +24,10 @@ class Product(models.Model):
         max_digits=10, decimal_places=2, verbose_name="Цена за покупку", help_text="Укажите цену"
     )
     created_at = models.DateField(
-        verbose_name="Дата создания", help_text="Укажите дату создания", null=True, blank=True
+        verbose_name="Дата создания", help_text="Укажите дату создания", null=True, blank=True#, auto_now_add=True
     )
     updated_at = models.DateField(
-        verbose_name="Дата последнего изменения", help_text="Укажите дату последнего изменения", null=True, blank=True
+        verbose_name="Дата последнего изменения", help_text="Укажите дату последнего изменения", null=True, blank=True#, auto_now=True
     )
 
     views_counter = models.PositiveIntegerField(default=0, verbose_name="Счетчик просмотров",

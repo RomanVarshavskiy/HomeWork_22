@@ -11,10 +11,10 @@
         {% for category in categories %}
             <li class="list-group-item d-flex justify-content-between align-items-center">
                 <a href="{% url 'catalog:category_detail' category.id %}">{{ category.name }}</a>
-                <div class="btn-group btn-group-sm" role="group">
+                <span>
                     <a href="{% url 'catalog:category_update' category.id %}" class="btn btn-sm btn-secondary ml-3">Редактировать</a>
                     <a href="{% url 'catalog:category_delete' category.id %}" class="btn btn-sm btn-danger ml-1">Удалить</a>
-                </div>
+                </span>
             </li>
         {% endfor %}
     </ul>
