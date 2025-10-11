@@ -10,6 +10,7 @@ from django.views.generic import ListView, CreateView, DetailView, UpdateView, D
 
 from django.core.mail import send_mail
 
+from myblog.forms import BlogPostForm
 from myblog.models import BlogPost
 
 
@@ -24,7 +25,7 @@ class BlogPostCreateView(CreateView):
     """
 
     model = BlogPost
-    fields = ['title', 'content', 'preview_image', 'created_at', 'updated_at', 'is_published', 'views_counter']
+    form_class = BlogPostForm
     template_name = 'myblog/blogpost_form.html'
     success_url = reverse_lazy('myblog:blogposts_list')
 
@@ -102,7 +103,7 @@ class BlogPostUpdateView(UpdateView):
     """
 
     model = BlogPost
-    fields = ['title', 'content', 'preview_image', 'created_at', 'updated_at', 'is_published', 'views_counter']
+    form_class = BlogPostForm
     template_name = 'myblog/blogpost_form.html'
     success_url = reverse_lazy('myblog:blogposts_list')
 
