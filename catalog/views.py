@@ -4,15 +4,13 @@
 с простой обработкой формы и главную страницу с выборкой последних товаров.
 """
 
-
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.urls import reverse_lazy, reverse
-from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
-from django.views import View
+from django.urls import reverse, reverse_lazy
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
 
-from catalog.forms import ProductForm, CategoryForm
-from catalog.models import Contact, Product, Category
+from catalog.forms import CategoryForm, ProductForm
+from catalog.models import Category, Contact, Product
 
 
 class ProductCreateView(CreateView):
@@ -27,8 +25,8 @@ class ProductCreateView(CreateView):
 
     model = Product
     form_class = ProductForm
-    template_name = 'catalog/product_form.html'
-    success_url = reverse_lazy('catalog:products_list')
+    template_name = "catalog/product_form.html"
+    success_url = reverse_lazy("catalog:products_list")
 
 
 class ProductListView(ListView):
@@ -41,8 +39,8 @@ class ProductListView(ListView):
     """
 
     model = Product
-    template_name = 'catalog/products_list.html'
-    context_object_name = 'products'
+    template_name = "catalog/products_list.html"
+    context_object_name = "products"
 
 
 class ProductDetailView(DetailView):
@@ -53,8 +51,8 @@ class ProductDetailView(DetailView):
     """
 
     model = Product
-    template_name = 'catalog/product_detail.html'
-    context_object_name = 'product'
+    template_name = "catalog/product_detail.html"
+    context_object_name = "product"
 
     def get_object(self, queryset=None):
         """Возвращает объект товара и увеличивает счётчик просмотров.
@@ -82,14 +80,14 @@ class ProductUpdateView(UpdateView):
 
     model = Product
     form_class = ProductForm
-    template_name = 'catalog/product_form.html'
-    success_url = reverse_lazy('catalog:products_list')
+    template_name = "catalog/product_form.html"
+    success_url = reverse_lazy("catalog:products_list")
 
     def get_success_url(self):
         """URL для редиректа после успешного обновления.
         Ведёт на страницу детали товара.
         """
-        return reverse_lazy('catalog:product_detail', args={self.kwargs.get('pk')})
+        return reverse_lazy("catalog:product_detail", args={self.kwargs.get("pk")})
 
 
 class ProductDeleteView(DeleteView):
@@ -102,8 +100,8 @@ class ProductDeleteView(DeleteView):
     """
 
     model = Product
-    template_name = 'catalog/product_confirm_delete.html'
-    success_url = reverse_lazy('catalog:products_list')
+    template_name = "catalog/product_confirm_delete.html"
+    success_url = reverse_lazy("catalog:products_list")
 
 
 def home(request):
@@ -131,10 +129,14 @@ def home(request):
         print(f"- [{p.id}] {p.name} | создан: {p.created_at} | цена: {p.price}")
 
     # Передаём оба queryset'а в шаблон
-    return render(request, "catalog/home.html", {
-        "products": products,
-        "last_products": last_products,
-    })
+    return render(
+        request,
+        "catalog/home.html",
+        {
+            "products": products,
+            "last_products": last_products,
+        },
+    )
 
 
 class ContactsView(ListView):
@@ -178,8 +180,8 @@ class CategoryCreateView(CreateView):
 
     model = Category
     form_class = CategoryForm
-    template_name = 'catalog/category_form.html'
-    success_url = reverse_lazy('catalog:categories_list')
+    template_name = "catalog/category_form.html"
+    success_url = reverse_lazy("catalog:categories_list")
 
 
 class CategoryListView(ListView):
@@ -192,8 +194,8 @@ class CategoryListView(ListView):
     """
 
     model = Category
-    template_name = 'catalog/categories_list.html'
-    context_object_name = 'categories'
+    template_name = "catalog/categories_list.html"
+    context_object_name = "categories"
 
 
 class CategoryDetailView(DetailView):
@@ -206,8 +208,8 @@ class CategoryDetailView(DetailView):
     """
 
     model = Category
-    template_name = 'catalog/category_detail.html'
-    context_object_name = 'category'
+    template_name = "catalog/category_detail.html"
+    context_object_name = "category"
 
 
 class CategoryUpdateView(UpdateView):
@@ -222,14 +224,14 @@ class CategoryUpdateView(UpdateView):
 
     model = Category
     form_class = CategoryForm
-    template_name = 'catalog/category_form.html'
-    success_url = reverse_lazy('catalog:categories_list')
+    template_name = "catalog/category_form.html"
+    success_url = reverse_lazy("catalog:categories_list")
 
     def get_success_url(self):
         """URL для редиректа после успешного обновления.
         Ведёт на детальную страницу категории.
         """
-        return reverse('catalog:category_detail', args={self.kwargs.get('pk')})
+        return reverse("catalog:category_detail", args={self.kwargs.get("pk")})
 
 
 class CategoryDeleteView(DeleteView):
@@ -242,5 +244,5 @@ class CategoryDeleteView(DeleteView):
     """
 
     model = Category
-    template_name = 'catalog/category_confirm_delete.html'
-    success_url = reverse_lazy('catalog:categories_list')
+    template_name = "catalog/category_confirm_delete.html"
+    success_url = reverse_lazy("catalog:categories_list")
