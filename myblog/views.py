@@ -4,12 +4,11 @@
 просмотров и отправки уведомления при достижении порога просмотров.
 """
 
-
-from django.urls import reverse_lazy, reverse
-from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
-
 from django.core.mail import send_mail
+from django.urls import reverse, reverse_lazy
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
 
+from myblog.forms import BlogPostForm
 from myblog.models import BlogPost
 
 
@@ -24,9 +23,9 @@ class BlogPostCreateView(CreateView):
     """
 
     model = BlogPost
-    fields = ['title', 'content', 'preview_image', 'created_at', 'updated_at', 'is_published', 'views_counter']
-    template_name = 'myblog/blogpost_form.html'
-    success_url = reverse_lazy('myblog:blogposts_list')
+    form_class = BlogPostForm
+    template_name = "myblog/blogpost_form.html"
+    success_url = reverse_lazy("myblog:blogposts_list")
 
 
 class BlogPostListView(ListView):
@@ -39,8 +38,8 @@ class BlogPostListView(ListView):
     """
 
     model = BlogPost
-    template_name = 'myblog/blogposts_list.html'
-    context_object_name = 'blogposts'
+    template_name = "myblog/blogposts_list.html"
+    context_object_name = "blogposts"
 
     def get_queryset(self):
         """Возвращает QuerySet только опубликованных записей.
@@ -60,8 +59,8 @@ class BlogPostDetailView(DetailView):
     """
 
     model = BlogPost
-    template_name = 'myblog/blogpost_detail.html'
-    context_object_name = 'blogpost'
+    template_name = "myblog/blogpost_detail.html"
+    context_object_name = "blogpost"
 
     def get_object(self, queryset=None):
         """Возвращает объект публикации и применяет побочные эффекты.
@@ -79,13 +78,13 @@ class BlogPostDetailView(DetailView):
         obj = super().get_object(queryset)
         obj.views_counter += 1
         obj.save()
-        obj.refresh_from_db(fields=['views_counter'])
+        obj.refresh_from_db(fields=["views_counter"])
         if obj.views_counter == 100:
             send_mail(
-                subject='Поздравляем! 100 просмотров статьи',
+                subject="Поздравляем! 100 просмотров статьи",
                 message=f'Статья "{obj.title}" набрала 100 просмотров.',
                 from_email=None,
-                recipient_list=['recipient@exemple.com'],
+                recipient_list=["recipient@exemple.com"],
                 fail_silently=False,
             )
         return obj
@@ -102,15 +101,15 @@ class BlogPostUpdateView(UpdateView):
     """
 
     model = BlogPost
-    fields = ['title', 'content', 'preview_image', 'created_at', 'updated_at', 'is_published', 'views_counter']
-    template_name = 'myblog/blogpost_form.html'
-    success_url = reverse_lazy('myblog:blogposts_list')
+    form_class = BlogPostForm
+    template_name = "myblog/blogpost_form.html"
+    success_url = reverse_lazy("myblog:blogposts_list")
 
     def get_success_url(self):
         """Возвращает URL для редиректа после успешного обновления.
         Ведёт на детальную страницу отредактированной публикации.
         """
-        return reverse('myblog:blogpost_detail', args={self.kwargs.get('pk')})
+        return reverse("myblog:blogpost_detail", args={self.kwargs.get("pk")})
 
 
 class BlogPostDeleteView(DeleteView):
@@ -121,6 +120,7 @@ class BlogPostDeleteView(DeleteView):
         template_name: Шаблон подтверждения удаления.
         success_url: URL для редиректа после успешного удаления (к списку публикаций).
     """
+
     model = BlogPost
-    template_name = 'myblog/blogpost_confirm_delete.html'
-    success_url = reverse_lazy('myblog:blogposts_list')
+    template_name = "myblog/blogpost_confirm_delete.html"
+    success_url = reverse_lazy("myblog:blogposts_list")

@@ -12,6 +12,7 @@
     <p>Категория: {{ product.category.name }}</p>
     <p>Описание: {{ product.description }}</p>
     <p>Дата создания: {{ product.created_at|date:"d M Y" }}</p>
+    <p>Дата последнего изменения: {{ product.updated_at|date:"d M Y" }}</p>
     <p>Цена: {{ product.price }} р.</p>
     <p>Количество просмотров: {{ product.views_counter }}</p>
     <a href="{% url 'catalog:product_update' product.pk %}" class="btn btn-secondary">Редактировать</a>

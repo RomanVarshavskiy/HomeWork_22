@@ -7,10 +7,23 @@
 Обе формы имеют преднастроенные виджеты для удобного ввода данных в админке/шаблонах.
 """
 
-
 from django import forms
+from django.core.exceptions import ValidationError
 
-from .models import Product, Category
+from .models import Category, Product
+
+FORBIDDEN_WORDS = (
+    "казино",
+    "криптовалюта",
+    "крипта",
+    "биржа",
+    "дешево",
+    "бесплатно",
+    "обман",
+    "полиция",
+    "радар",
+    "spam",
+)
 
 
 class ProductForm(forms.ModelForm):
@@ -28,17 +41,92 @@ class ProductForm(forms.ModelForm):
             fields: Поля модели, отображаемые в форме.
             widgets: Кастомные виджеты для рендеринга элементов ввода.
         """
+
         model = Product
-        fields = ["name", "description", "image", "category", "price", "created_at", "updated_at"]
+        exclude = ["views_counter"]
         widgets = {
             "name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Название"}),
             "description": forms.Textarea(attrs={"class": "form-control", "rows": 4, "placeholder": "Описание"}),
             "image": forms.ClearableFileInput(attrs={"class": "form-control"}),
             "category": forms.Select(attrs={"class": "form-select"}),
-            "price": forms.NumberInput(attrs={"class": "form-control", "step": "0.01"}),
+            "price": forms.NumberInput(attrs={"class": "form-control", "step": "1.00"}),
             "created_at": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
             "updated_at": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
         }
+
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #
+    #     self.fields['name'].widget.attrs.update({
+    #         "class": "form-control",
+    #         "placeholder": "Название"
+    #     })
+    #
+    #     self.fields['description'].widget.attrs.update({
+    #         "class": "form-control",
+    #         "rows": 4,
+    #         "placeholder": "Описание"
+    #     })
+    #
+    #     self.fields['image'].widget.attrs.update({
+    #         "class": "form-control",
+    #     })
+    #
+    #     self.fields['category'].widget.attrs.update({
+    #         "class": "form-select",
+    #     })
+    #
+    #     self.fields['price'].widget.attrs.update({
+    #         "class": "form-control",
+    #         "step": "1.00"
+    #     })
+    #
+    #     self.fields['created_at'].widget.attrs.update({
+    #         "class": "form-control",
+    #         "type": "date"
+    #     })
+    #
+    #     self.fields['updated_at'].widget.attrs.update({
+    #         "class": "form-control",
+    #         "type": "date"
+    #     })
+
+    def clean(self):
+        cleaned_data = super().clean()
+        name = (cleaned_data.get("name") or "").lower()
+        description = (cleaned_data.get("description") or "").lower()
+        for word in FORBIDDEN_WORDS:
+            if word in name:
+                self.add_error("name", f'Наименование товара не может содержать запрещенное слово "{word}"')
+            if word in description:
+                self.add_error("description", f'Описание товара не может содержать запрещенное слово "{word}"')
+        return cleaned_data
+
+    def clean_price(self):
+        price = self.cleaned_data.get("price")
+        if price is not None and price <= 0:
+            raise ValidationError("Цена товара не может быть отрицательной")
+        return price
+
+    def clean_image(self):
+        image = self.cleaned_data.get("image")
+        if not image:
+            return image
+        max_size = 5 * 1024 * 1024  # 5 MB
+        if hasattr(image, "size") and image.size > max_size:
+            raise ValidationError("Размер файла не должен превышать 5 МБ.")
+
+        content_type = getattr(image, "content_type", "")
+        allowed_types = {"image/jpeg", "image/png"}
+        if content_type not in allowed_types:
+            raise ValidationError("Допустимы только изображения в формате JPEG или PNG.")
+
+        name = getattr(image, "name", "") or ""
+        if not name.lower().endswith((".jpg", ".jpeg", ".png")):
+            raise ValidationError("Файл должен иметь расширение .jpg, .jpeg или .png.")
+
+        return image
+
 
 class CategoryForm(forms.ModelForm):
     """Форма создания/редактирования категории.
@@ -62,3 +150,20 @@ class CategoryForm(forms.ModelForm):
             "description": forms.Textarea(attrs={"class": "form-control", "rows": 4, "placeholder": "Описание"}),
             "image": forms.ClearableFileInput(attrs={"class": "form-control"}),
         }
+
+    def clean_image(self):
+        image = self.cleaned_data.get("image")
+        if not image:
+            return image
+        max_size = 5 * 1024 * 1024  # 5 MB
+        if hasattr(image, "size") and image.size > max_size:
+            raise ValidationError("Размер файла не должен превышать 5 МБ.")
+
+        content_type = getattr(image, "content_type", "")
+        allowed_types = {"image/jpeg", "image/jpg", "image/png"}
+        if content_type not in allowed_types:
+            raise ValidationError("Допустимы только изображения в формате JPEG, JPG или PNG.")
+
+        name = getattr(image, "name", "") or ""
+        if not name.lower().endswith((".jpg", ".jpeg", ".png")):
+            raise ValidationError("Файл должен иметь расширение .jpg, .jpeg или .png.")
