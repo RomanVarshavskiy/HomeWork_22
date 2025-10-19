@@ -1,0 +1,33 @@
+{% extends 'catalog/base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+
+<div class="row bg-dark-subtle col-4 mx-auto rounded-3 border border-secondary">
+    <div class="container col-10 py-4">
+        <h3 class="mb-4">Войти с учетной записью RomStore</h3>
+        <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="form-group my-3">
+                <div style="display:flex; align-items: center; justify-content: space-between;">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="remember" value="1"> Запомнить меня
+                        </label>
+                    </div>
+                    <a href="#">Забыли пароль?</a>
+                </div>
+            </div>
+            <div>
+                <button type="submit" class="btn btn-dark d-grid col-12 mx-auto  mb-3">Войти</button>
+            </div>
+            <div class="new_to_mi">
+                <span>Нет учетной записи в RomStore?</span>
+            </div>
+            <a href="{% url 'users:register' %}" class="btn btn-secondary d-grid col-12 mx-auto">Зарегистрироваться</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
