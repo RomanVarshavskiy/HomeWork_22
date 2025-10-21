@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import CustomUser
 
 
@@ -28,19 +28,40 @@ class CustomUserCreationForm(UserCreationForm):
         super().__init__(*args, **kwargs)
         for f in self.fields.values():
             f.label = ""  # скрыть label
+        self.fields["password1"].help_text = ""
         self.fields["password1"].widget = forms.PasswordInput(attrs={
             "class": "form-control",
             "placeholder": "Пароль"
         })
-        self.fields["password1"].help_text = ""
+
+        self.fields["password2"].help_text = ""
         self.fields["password2"].widget = forms.PasswordInput(attrs={
             "class": "form-control",
             "placeholder": "Подтвердите пароль"
         })
-        self.fields["password2"].help_text = ""
 
     def clean_phone_number(self):
         phone_number = self.cleaned_data.get("phone_number")
         if phone_number and not phone_number.isdigit():
             raise forms.ValidationError('Номер телефона должен содержать только цифры.')
         return phone_number
+
+
+class CustomUserLoginForm(AuthenticationForm):
+    username = forms.CharField(
+        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Электронная почта"})
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Пароль"})
+    )
+
+    class Meta:
+        model = CustomUser
+        fields = ("username", "password1")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for f in self.fields.values():
+            f.label = ""  # скрыть label
+        self.fields["username"].help_text = ""
+        self.fields["password"].help_text = ""

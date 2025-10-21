@@ -6,8 +6,8 @@
 
 <div class="row bg-dark-subtle col-4 mx-auto rounded-3 border border-secondary">
     <div class="container col-10 py-4">
-        <h3 class="mb-4">Войти с учетной записью RomStore</h3>
-        <form method="post" enctype="multipart/form-data" novalidate>
+        <h3 class="mb-4 text-center">Войти с учетной записью RomStore</h3>
+        <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
             <div class="form-group my-3">

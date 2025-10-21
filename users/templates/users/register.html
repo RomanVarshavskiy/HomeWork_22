@@ -6,7 +6,7 @@
 
 <div class="row bg-dark-subtle col-4 mx-auto rounded-3 border border-secondary">
     <div class="container col-10 py-4">
-        <h3 class="mb-4">Регистрация</h3>
+        <h3 class="mb-4 text-center">Регистрация</h3>
         <form method="post" enctype="multipart/form-data" novalidate>
             {% csrf_token %}
             {{ form.as_p }}
