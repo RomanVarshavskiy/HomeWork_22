@@ -65,3 +65,19 @@ class CustomUserLoginForm(AuthenticationForm):
             f.label = ""  # скрыть label
         self.fields["username"].help_text = ""
         self.fields["password"].help_text = ""
+
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ("email", "username", "phone_number", "avatar", "country")
+        widgets = {
+            "email": forms.EmailInput(attrs={"class": "form-control", "placeholder": "Электронная почта"}),
+            "username": forms.TextInput(attrs={"class": "form-control", "placeholder": "Имя пользователя"}),
+            "phone_number": forms.TextInput(attrs={"class": "form-control", "placeholder": "Телефон"}),
+            "country": forms.TextInput(attrs={"class": "form-control", "placeholder": "Страна"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for f in self.fields.values():
+            f.label = ""

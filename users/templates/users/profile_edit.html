@@ -1,0 +1,27 @@
+{% extends 'catalog/base.html' %}
+
+{% block title %}Edit{% endblock %}
+
+{% block content %}
+
+<div class="row bg-dark-subtle col-4 mx-auto rounded-3 border border-secondary">
+    <div class="container col-10 py-4">
+        <h3 class="mb-4 text-center">Редактирование профиля</h3>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="mb-3">{{ form.email }}</div>
+            <div class="mb-3">{{ form.username }}</div>
+            <div class="mb-3">{{ form.phone_number }}</div>
+            <div class="mb-3">{{ form.country }}</div>
+            <div class="mb-3">
+                {% if request.user.avatar %}
+                <img src="{{ request.user.avatar.url }}" alt="avatar" style="max-width:120px;">
+                {% endif %}
+                {{ form.avatar }}
+            </div>
+            <button type="submit" class="btn btn-dark d-grid col-12 mx-auto  mb-3">Сохранить</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
