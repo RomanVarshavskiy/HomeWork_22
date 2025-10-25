@@ -40,11 +40,11 @@ class CustomUserCreationForm(UserCreationForm):
             "placeholder": "Подтвердите пароль"
         })
 
-    def clean_phone_number(self):
-        phone_number = self.cleaned_data.get("phone_number")
-        if phone_number and not phone_number.isdigit():
-            raise forms.ValidationError('Номер телефона должен содержать только цифры.')
-        return phone_number
+    # def clean_phone_number(self):
+    #     phone_number = self.cleaned_data.get("phone_number")
+    #     if phone_number and not phone_number.isdigit():
+    #         raise forms.ValidationError('Номер телефона должен содержать только цифры.')
+    #     return phone_number
 
 
 class CustomUserLoginForm(AuthenticationForm):
