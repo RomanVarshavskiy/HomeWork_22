@@ -3,7 +3,7 @@
 Содержит CRUD-представления для модели BlogPost, а также логику инкремента счётчика
 просмотров и отправки уведомления при достижении порога просмотров.
 """
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
@@ -12,7 +12,7 @@ from myblog.forms import BlogPostForm
 from myblog.models import BlogPost
 
 
-class BlogPostCreateView(CreateView):
+class BlogPostCreateView(LoginRequiredMixin, CreateView):
     """Создание публикации блога.
 
     Атрибуты:
@@ -50,7 +50,7 @@ class BlogPostListView(ListView):
         return BlogPost.objects.filter(is_published=True)
 
 
-class BlogPostDetailView(DetailView):
+class BlogPostDetailView(LoginRequiredMixin, DetailView):
     """Детальная страница публикации.
 
     Дополнительно:
@@ -90,7 +90,7 @@ class BlogPostDetailView(DetailView):
         return obj
 
 
-class BlogPostUpdateView(UpdateView):
+class BlogPostUpdateView(LoginRequiredMixin, UpdateView):
     """Редактирование публикации блога.
 
     Атрибуты:
@@ -112,7 +112,7 @@ class BlogPostUpdateView(UpdateView):
         return reverse("myblog:blogpost_detail", args={self.kwargs.get("pk")})
 
 
-class BlogPostDeleteView(DeleteView):
+class BlogPostDeleteView(LoginRequiredMixin, DeleteView):
     """Удаление публикации блога.
 
     Атрибуты:

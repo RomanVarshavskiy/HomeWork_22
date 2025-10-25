@@ -1,0 +1,20 @@
+{% extends 'catalog/base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+
+<div class="row bg-dark-subtle col-4 mx-auto rounded-3 border border-secondary">
+    <div class="container col-10 py-4">
+        <h3 class="mb-4 text-center">Регистрация</h3>
+        <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-dark d-grid col-12 mx-auto  mb-3">Зарегистрироваться</button>
+            <p>Уже есть аккаунт?
+                <a href="{% url 'users:login' %}">Войти здесь</a>
+            </p>
+        </form>
+    </div>
+</div>
+{% endblock %}

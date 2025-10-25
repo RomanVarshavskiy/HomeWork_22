@@ -4,6 +4,7 @@
 с простой обработкой формы и главную страницу с выборкой последних товаров.
 """
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
@@ -13,7 +14,7 @@ from catalog.forms import CategoryForm, ProductForm
 from catalog.models import Category, Contact, Product
 
 
-class ProductCreateView(CreateView):
+class ProductCreateView(LoginRequiredMixin, CreateView):
     """Создание товара.
 
     Атрибуты:
@@ -43,7 +44,7 @@ class ProductListView(ListView):
     context_object_name = "products"
 
 
-class ProductDetailView(DetailView):
+class ProductDetailView(LoginRequiredMixin, DetailView):
     """Детальная страница товара.
 
     Дополнительно:
@@ -68,7 +69,7 @@ class ProductDetailView(DetailView):
         return self.object
 
 
-class ProductUpdateView(UpdateView):
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
     """Редактирование товара.
 
     Атрибуты:
@@ -90,7 +91,7 @@ class ProductUpdateView(UpdateView):
         return reverse_lazy("catalog:product_detail", args={self.kwargs.get("pk")})
 
 
-class ProductDeleteView(DeleteView):
+class ProductDeleteView(LoginRequiredMixin, DeleteView):
     """Удаление товара.
 
     Атрибуты:
@@ -168,7 +169,7 @@ class ContactsView(ListView):
         return HttpResponse(f"Спасибо {name}. Сообщение успешно отправлено")
 
 
-class CategoryCreateView(CreateView):
+class CategoryCreateView(LoginRequiredMixin, CreateView):
     """Создание категории.
 
     Атрибуты:
@@ -198,7 +199,7 @@ class CategoryListView(ListView):
     context_object_name = "categories"
 
 
-class CategoryDetailView(DetailView):
+class CategoryDetailView(LoginRequiredMixin, DetailView):
     """Детальная страница категории.
 
     Атрибуты:
@@ -212,7 +213,7 @@ class CategoryDetailView(DetailView):
     context_object_name = "category"
 
 
-class CategoryUpdateView(UpdateView):
+class CategoryUpdateView(LoginRequiredMixin, UpdateView):
     """Редактирование категории.
 
     Атрибуты:
@@ -234,7 +235,7 @@ class CategoryUpdateView(UpdateView):
         return reverse("catalog:category_detail", args={self.kwargs.get("pk")})
 
 
-class CategoryDeleteView(DeleteView):
+class CategoryDeleteView(LoginRequiredMixin, DeleteView):
     """Удаление категории.
 
     Атрибуты:
