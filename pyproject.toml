@@ -12,6 +12,7 @@ python-dotenv = "^1.1.1"
 psycopg2-binary = "^2.9.10"
 pillow = "^11.3.0"
 ipython = "^9.5.0"
+django-phonenumber-field = {extras = ["phonenumbers"], version = "^8.3.0"}
 
 
 [tool.poetry.group.lint.dependencies]

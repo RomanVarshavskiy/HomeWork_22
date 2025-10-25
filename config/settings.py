@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+from django.conf.global_settings import AUTH_USER_MODEL
 from dotenv import load_dotenv
 
 load_dotenv(override=True)
@@ -25,6 +26,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "catalog",
     "myblog",
+    "users",
+    "phonenumber_field",
 ]
 
 MIDDLEWARE = [
@@ -104,23 +107,23 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+AUTH_USER_MODEL = "users.CustomUser"
 
 # для отправки реальных сообщений
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # для вывода сообщения в терминал
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
-# EMAIL_HOST = <MAIL_HOST> - хост
-# EMAIL_PORT = <MAIL_PORT> - порт
-# EMAIL_USE_TLS = <True>
-# EMAIL_HOST_USER = <MAIL_HOST_USER> - логин
-# EMAIL_HOST_PASSWORD = <MAIL_HOST_PASSWORD> - пароль
+LOGIN_REDIRECT_URL = "catalog:products_list"
+LOGOUT_REDIRECT_URL = "catalog:home"
+LOGIN_URL = "users:login"
