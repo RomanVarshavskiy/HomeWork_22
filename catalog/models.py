@@ -32,10 +32,10 @@ class Product(models.Model):
         null=True,
         blank=True,  # , auto_now=True
     )
-
     views_counter = models.PositiveIntegerField(
         default=0, verbose_name="Счетчик просмотров", help_text="Укажите количество просмотров"
     )
+    is_published = models.BooleanField(default=False)
 
     class Meta:
         """Метаданные модели Product.
@@ -49,6 +49,9 @@ class Product(models.Model):
         verbose_name = "Товар"
         verbose_name_plural = "Товары"
         ordering = ["name", "category", "price", "updated_at"]
+        permissions = [
+            ("can_unpublish_product", "Can unpublish product"),
+        ]
 
     def __str__(self):
         """Строковое представление товара: '<Категория>: <Наименование>'."""

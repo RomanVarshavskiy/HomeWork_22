@@ -52,44 +52,8 @@ class ProductForm(forms.ModelForm):
             "price": forms.NumberInput(attrs={"class": "form-control", "step": "1.00"}),
             "created_at": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
             "updated_at": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
+            "is_published": forms.CheckboxInput(attrs={"class": "form-check-input"}),
         }
-
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #
-    #     self.fields['name'].widget.attrs.update({
-    #         "class": "form-control",
-    #         "placeholder": "Название"
-    #     })
-    #
-    #     self.fields['description'].widget.attrs.update({
-    #         "class": "form-control",
-    #         "rows": 4,
-    #         "placeholder": "Описание"
-    #     })
-    #
-    #     self.fields['image'].widget.attrs.update({
-    #         "class": "form-control",
-    #     })
-    #
-    #     self.fields['category'].widget.attrs.update({
-    #         "class": "form-select",
-    #     })
-    #
-    #     self.fields['price'].widget.attrs.update({
-    #         "class": "form-control",
-    #         "step": "1.00"
-    #     })
-    #
-    #     self.fields['created_at'].widget.attrs.update({
-    #         "class": "form-control",
-    #         "type": "date"
-    #     })
-    #
-    #     self.fields['updated_at'].widget.attrs.update({
-    #         "class": "form-control",
-    #         "type": "date"
-    #     })
 
     def clean(self):
         cleaned_data = super().clean()
@@ -126,6 +90,16 @@ class ProductForm(forms.ModelForm):
             raise ValidationError("Файл должен иметь расширение .jpg, .jpeg или .png.")
 
         return image
+
+class ProductModeratorForm(forms.ModelForm):
+
+    class Meta:
+
+        model = Product
+        fields = ("is_published",)
+        widgets = {
+            "is_published": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+        }
 
 
 class CategoryForm(forms.ModelForm):

@@ -15,8 +15,12 @@
     <p>Дата последнего изменения: {{ product.updated_at|date:"d M Y" }}</p>
     <p>Цена: {{ product.price }} р.</p>
     <p>Количество просмотров: {{ product.views_counter }}</p>
+    {% if perms.catalog.change_product %}
     <a href="{% url 'catalog:product_update' product.pk %}" class="btn btn-secondary">Редактировать</a>
+    {% endif %}
+    {% if perms.catalog.delete_product %}
     <a href="{% url 'catalog:product_delete' product.pk %}" class="btn btn-danger">Удалить</a>
+    {% endif %}
     <a href="{% url 'catalog:products_list' %}" class="btn btn-primary">Вернуться к списку</a>
 </div>
 {% endblock %}

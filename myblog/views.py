@@ -3,12 +3,13 @@
 Содержит CRUD-представления для модели BlogPost, а также логику инкремента счётчика
 просмотров и отправки уведомления при достижении порога просмотров.
 """
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
 
-from myblog.forms import BlogPostForm
+from myblog.forms import BlogPostForm, BlogPostModeratorForm
 from myblog.models import BlogPost
 
 
@@ -90,7 +91,7 @@ class BlogPostDetailView(LoginRequiredMixin, DetailView):
         return obj
 
 
-class BlogPostUpdateView(LoginRequiredMixin, UpdateView):
+class BlogPostUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """Редактирование публикации блога.
 
     Атрибуты:
@@ -104,6 +105,9 @@ class BlogPostUpdateView(LoginRequiredMixin, UpdateView):
     form_class = BlogPostForm
     template_name = "myblog/blogpost_form.html"
     success_url = reverse_lazy("myblog:blogposts_list")
+    permission_required = "myblog.change_blogpost"
+    raise_exception = True
+
 
     def get_success_url(self):
         """Возвращает URL для редиректа после успешного обновления.
@@ -111,8 +115,18 @@ class BlogPostUpdateView(LoginRequiredMixin, UpdateView):
         """
         return reverse("myblog:blogpost_detail", args={self.kwargs.get("pk")})
 
+    def get_form_class(self):
+        user = self.request.user
+        if user.is_superuser:
+            return BlogPostForm
+        if user.has_perm("myblog.can_unpublish_blogpost"):
+            return BlogPostModeratorForm
+        raise PermissionDenied('У вас нет прав изменять данные')
 
-class BlogPostDeleteView(LoginRequiredMixin, DeleteView):
+
+
+
+class BlogPostDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     """Удаление публикации блога.
 
     Атрибуты:
@@ -124,3 +138,5 @@ class BlogPostDeleteView(LoginRequiredMixin, DeleteView):
     model = BlogPost
     template_name = "myblog/blogpost_confirm_delete.html"
     success_url = reverse_lazy("myblog:blogposts_list")
+    permission_required = "myblog.delete_blogpost"
+    raise_exception = True

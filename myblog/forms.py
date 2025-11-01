@@ -56,3 +56,13 @@ class BlogPostForm(forms.ModelForm):
         name = getattr(image, "name", "") or ""
         if not name.lower().endswith((".jpg", ".jpeg", ".png")):
             raise ValidationError("Файл должен иметь расширение .jpg, .jpeg или .png.")
+
+
+class BlogPostModeratorForm(forms.ModelForm):
+
+    class Meta:
+        model = BlogPost
+        fields = ("is_published",)
+        widgets = {
+            "is_published": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+        }

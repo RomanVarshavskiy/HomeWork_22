@@ -4,13 +4,14 @@
 с простой обработкой формы и главную страницу с выборкой последних товаров.
 """
 
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
 
-from catalog.forms import CategoryForm, ProductForm
+from catalog.forms import CategoryForm, ProductForm, ProductModeratorForm
 from catalog.models import Category, Contact, Product
 
 
@@ -69,7 +70,7 @@ class ProductDetailView(LoginRequiredMixin, DetailView):
         return self.object
 
 
-class ProductUpdateView(LoginRequiredMixin, UpdateView):
+class ProductUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """Редактирование товара.
 
     Атрибуты:
@@ -83,6 +84,9 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
     form_class = ProductForm
     template_name = "catalog/product_form.html"
     success_url = reverse_lazy("catalog:products_list")
+    permission_required = "catalog.change_product"
+    raise_exception = True
+
 
     def get_success_url(self):
         """URL для редиректа после успешного обновления.
@@ -90,8 +94,16 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
         """
         return reverse_lazy("catalog:product_detail", args={self.kwargs.get("pk")})
 
+    def get_form_class(self):
+        user = self.request.user
+        if user.is_superuser:
+            return ProductForm
+        if user.has_perm("catalog.can_unpublish_product"):
+            return ProductModeratorForm
+        raise PermissionDenied('У вас нет прав изменять данные')
 
-class ProductDeleteView(LoginRequiredMixin, DeleteView):
+
+class ProductDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     """Удаление товара.
 
     Атрибуты:
@@ -103,6 +115,8 @@ class ProductDeleteView(LoginRequiredMixin, DeleteView):
     model = Product
     template_name = "catalog/product_confirm_delete.html"
     success_url = reverse_lazy("catalog:products_list")
+    permission_required = "catalog.delete_product"
+    raise_exception = True
 
 
 def home(request):
