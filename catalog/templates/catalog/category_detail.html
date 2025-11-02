@@ -11,11 +11,13 @@
     {% endif %}
     <p>Категория: {{ category.name }}</p>
     <p>Описание: {{ category.description }}</p>
-    {% if perms.catalog.change_category %}
-    <a href="{% url 'catalog:category_update' category.pk %}" class="btn btn-secondary">Редактировать</a>
-    {% endif %}
-    {% if perms.catalog.delete_category %}
-    <a href="{% url 'catalog:category_delete' category.pk %}" class="btn btn-danger">Удалить</a>
+    {% if user.is_authenticated %}
+        {% if user.is_superuser or category.owner_id == user.id or perms.catalog.can_unpublish_category %}
+            <a href="{% url 'catalog:category_update' category.pk %}" class="btn btn-secondary">Редактировать</a>
+        {% endif %}
+        {% if user.is_superuser or category.owner_id == user.id or perms.catalog.delete_category %}
+            <a href="{% url 'catalog:category_delete' category.pk %}" class="btn btn-danger">Удалить</a>
+        {% endif %}
     {% endif %}
     <a href="{% url 'catalog:categories_list' %}" class="btn btn-primary">Вернуться к списку</a>
 </div>

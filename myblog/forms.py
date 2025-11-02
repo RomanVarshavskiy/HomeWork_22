@@ -21,7 +21,7 @@ class BlogPostForm(forms.ModelForm):
         """
 
         model = BlogPost
-        exclude = ("views_counter",)
+        exclude = ("views_counter", "author")
         widgets = {
             "title": forms.TextInput(attrs={"class": "form-control", "placeholder": "Заголовок"}),
             "content": forms.Textarea(attrs={"class": "form-control", "rows": 4, "placeholder": "Содержимое"}),
@@ -62,7 +62,8 @@ class BlogPostModeratorForm(forms.ModelForm):
 
     class Meta:
         model = BlogPost
-        fields = ("is_published",)
+        fields = ("content", "is_published",)
         widgets = {
+            "content": forms.Textarea(attrs={"class": "form-control", "rows": 4, "placeholder": "Содержимое"}),
             "is_published": forms.CheckboxInput(attrs={"class": "form-check-input"}),
         }

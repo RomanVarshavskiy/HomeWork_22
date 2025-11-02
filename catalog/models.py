@@ -2,6 +2,8 @@
 
 from django.db import models
 
+from users.models import CustomUser
+
 
 class Product(models.Model):
     """Товар каталога."""
@@ -37,6 +39,15 @@ class Product(models.Model):
     )
     is_published = models.BooleanField(default=False)
 
+    owner = models.ForeignKey(
+        CustomUser,
+        verbose_name="Владелец",
+        help_text="Укажите владельца товара",
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
+    )
+
     class Meta:
         """Метаданные модели Product.
 
@@ -67,6 +78,15 @@ class Category(models.Model):
     )
     image = models.ImageField(
         upload_to="catalog/image", verbose_name="Изображение", help_text="Загрузите изображение", null=True, blank=True
+    )
+
+    owner = models.ForeignKey(
+        CustomUser,
+        verbose_name="Владелец",
+        help_text="Укажите владельца",
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
     )
 
     class Meta:

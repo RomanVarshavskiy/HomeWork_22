@@ -44,7 +44,7 @@ class ProductForm(forms.ModelForm):
         """
 
         model = Product
-        exclude = ["views_counter"]
+        exclude = ["views_counter", "owner"]
         widgets = {
             "name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Название"}),
             "description": forms.Textarea(attrs={"class": "form-control", "rows": 4, "placeholder": "Описание"}),

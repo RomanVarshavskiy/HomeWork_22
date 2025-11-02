@@ -2,6 +2,8 @@
 
 from django.db import models
 
+from users.models import CustomUser
+
 
 class BlogPost(models.Model):
     """Модель BlogPost с полями для хранения контента, изображений-превью,
@@ -27,6 +29,15 @@ class BlogPost(models.Model):
 
     views_counter = models.PositiveIntegerField(
         default=0, verbose_name="Счетчик просмотров", help_text="Укажите количество просмотров"
+    )
+
+    author = models.ForeignKey(
+        CustomUser,
+        verbose_name="Автор",
+        help_text="Укажите автора статьи",
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
     )
 
     class Meta:

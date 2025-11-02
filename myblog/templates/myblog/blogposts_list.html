@@ -6,9 +6,7 @@
 {% include 'myblog/include/header.html' %}
 
 <div class="d-flex justify-content-end mb-3">
-    {% if perms.catalog.add_product %}
     <a href="{% url 'myblog:blogpost_create' %}" class="btn btn-primary">Добавить статью</a>
-    {% endif %}
 </div>
 
 <div class="container">

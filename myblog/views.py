@@ -13,7 +13,7 @@ from myblog.forms import BlogPostForm, BlogPostModeratorForm
 from myblog.models import BlogPost
 
 
-class BlogPostCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+class BlogPostCreateView(LoginRequiredMixin, CreateView):
     """Создание публикации блога.
 
     Атрибуты:
@@ -27,14 +27,14 @@ class BlogPostCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView
     form_class = BlogPostForm
     template_name = "myblog/blogpost_form.html"
     success_url = reverse_lazy("myblog:blogposts_list")
-    permission_required = "myblog.add_blogpost"
-    raise_exception = True
 
-    def get_form_class(self):
-        user = self.request.user
-        if user.has_perm("myblog.add_blogpost"):
-            return BlogPostForm
-        raise PermissionDenied
+
+    def form_valid(self, form):
+        """Автопривязка владельца к текущему пользователю."""
+        blogpost = form.save(commit=False)
+        blogpost.author = self.request.user
+        blogpost.save()
+        return super().form_valid(form)
 
 
 class BlogPostListView(ListView):
@@ -116,12 +116,31 @@ class BlogPostUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView
     permission_required = "myblog.change_blogpost"
     raise_exception = True
 
+    def has_permission(self):
+        """Разрешаем редактирование только владельцу, суперпользователю или модератору."""
+        user = self.request.user
+        obj = self.get_object()
+        if user.is_superuser:
+            return True
+        # модератор, который может только менять публикацию
+        if user.has_perm("myblog.can_unpublish_blogpost"):
+            return True
+        # владелец объекта
+        return obj.owner_id == user.id
+
+    def get_queryset(self):
+        """Ограничим базовый queryset владельцем для безопасности (кроме суперпользователя/модератора)."""
+        qs = super().get_queryset()
+        user = self.request.user
+        if user.is_superuser or user.has_perm("myblog.can_unpublish_blogpost"):
+            return qs
+        return qs.filter(owner=user)
 
     def get_success_url(self):
-        """Возвращает URL для редиректа после успешного обновления.
-        Ведёт на детальную страницу отредактированной публикации.
+        """URL для редиректа после успешного обновления.
+        Ведёт на страницу детали товара.
         """
-        return reverse("myblog:blogpost_detail", args={self.kwargs.get("pk")})
+        return reverse_lazy("myblog:blogpost_detail", args=[self.kwargs.get("pk")])
 
     def get_form_class(self):
         user = self.request.user
@@ -129,6 +148,10 @@ class BlogPostUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView
             return BlogPostForm
         if user.has_perm("myblog.can_unpublish_blogpost"):
             return BlogPostModeratorForm
+        # владелец может редактировать полную форму
+        obj = self.get_object()
+        if obj.author_id == user.id:
+            return BlogPostForm
         raise PermissionDenied
 
 
@@ -146,3 +169,23 @@ class BlogPostDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView
     success_url = reverse_lazy("myblog:blogposts_list")
     permission_required = "myblog.delete_blogpost"
     raise_exception = True
+
+    def has_permission(self):
+        """Удалять может только владелец или суперпользователь или модератор."""
+        user = self.request.user
+        obj = self.get_object()
+        if user.is_superuser:
+            return True
+        # модератор
+        if user.has_perm("myblog.delete_blogpost"):
+            return True
+        # владелец объекта
+        return obj.author_id == user.id
+
+    def get_queryset(self):
+        """Ограничим удаление только своих объектов (кроме суперпользователя)."""
+        qs = super().get_queryset()
+        user = self.request.user
+        if user.is_superuser:
+            return qs
+        return qs.filter(owner=user)

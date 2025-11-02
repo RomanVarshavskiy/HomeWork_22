@@ -15,7 +15,7 @@ from catalog.forms import CategoryForm, ProductForm, ProductModeratorForm, Categ
 from catalog.models import Category, Contact, Product
 
 
-class ProductCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+class ProductCreateView(LoginRequiredMixin, CreateView):
     """Создание товара.
 
     Атрибуты:
@@ -29,14 +29,14 @@ class ProductCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView)
     form_class = ProductForm
     template_name = "catalog/product_form.html"
     success_url = reverse_lazy("catalog:products_list")
-    permission_required = "catalog.add_product"
-    raise_exception = True
 
-    def get_form_class(self):
-        user = self.request.user
-        if user.has_perm("catalog.add_product"):
-            return ProductForm
-        raise PermissionDenied
+
+    def form_valid(self, form):
+        """Автопривязка владельца к текущему пользователю."""
+        product = form.save(commit=False)
+        product.owner = self.request.user
+        product.save()
+        return super().form_valid(form)
 
 
 class ProductListView(ListView):
@@ -95,6 +95,26 @@ class ProductUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView)
     permission_required = "catalog.change_product"
     raise_exception = True
 
+    def has_permission(self):
+        """Разрешаем редактирование только владельцу, суперпользователю или модератору."""
+        user = self.request.user
+        obj = self.get_object()
+        if user.is_superuser:
+            return True
+        # модератор, который может только менять публикацию
+        if user.has_perm("catalog.can_unpublish_product"):
+            return True
+        # владелец объекта
+        return obj.owner_id == user.id
+
+    def get_queryset(self):
+        """Ограничим базовый queryset владельцем для безопасности (кроме суперпользователя/модератора)."""
+        qs = super().get_queryset()
+        user = self.request.user
+        if user.is_superuser or user.has_perm("catalog.can_unpublish_product"):
+            return qs
+        return qs.filter(owner=user)
+
 
     def get_success_url(self):
         """URL для редиректа после успешного обновления.
@@ -108,7 +128,12 @@ class ProductUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView)
             return ProductForm
         if user.has_perm("catalog.can_unpublish_product"):
             return ProductModeratorForm
+        # владелец может редактировать полную форму
+        obj = self.get_object()
+        if obj.owner_id == user.id:
+            return ProductForm
         raise PermissionDenied
+
 
 
 class ProductDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
@@ -125,6 +150,27 @@ class ProductDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView)
     success_url = reverse_lazy("catalog:products_list")
     permission_required = "catalog.delete_product"
     raise_exception = True
+
+    def has_permission(self):
+        """Удалять может только владелец или суперпользователь или модератор."""
+        user = self.request.user
+        obj = self.get_object()
+        if user.is_superuser:
+            return True
+        # модератор
+        if user.has_perm("catalog.delete_product"):
+            return True
+        # владелец объекта
+        return obj.owner_id == user.id
+
+    def get_queryset(self):
+        """Ограничим удаление только своих объектов (кроме суперпользователя)."""
+        qs = super().get_queryset()
+        user = self.request.user
+        if user.is_superuser:
+            return qs
+        return qs.filter(owner=user)
+
 
 
 def home(request):
@@ -191,7 +237,7 @@ class ContactsView(ListView):
         return HttpResponse(f"Спасибо {name}. Сообщение успешно отправлено")
 
 
-class CategoryCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+class CategoryCreateView(LoginRequiredMixin, CreateView):
     """Создание категории.
 
     Атрибуты:
@@ -205,14 +251,13 @@ class CategoryCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView
     form_class = CategoryForm
     template_name = "catalog/category_form.html"
     success_url = reverse_lazy("catalog:categories_list")
-    permission_required = "catalog.add_category"
-    raise_exception = True
 
-    def get_form_class(self):
-        user = self.request.user
-        if user.has_perm("catalog.add_category"):
-            return CategoryForm
-        raise PermissionDenied
+    def form_valid(self, form):
+        """Автопривязка владельца к текущему пользователю."""
+        category = form.save(commit=False)
+        category.owner = self.request.user
+        category.save()
+        return super().form_valid(form)
 
 
 class CategoryListView(ListView):
@@ -260,12 +305,31 @@ class CategoryUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView
     permission_required = "catalog.change_category"
     raise_exception = True
 
+    def has_permission(self):
+        """Разрешаем редактирование только владельцу, суперпользователю или модератору."""
+        user = self.request.user
+        obj = self.get_object()
+        if user.is_superuser:
+            return True
+        # модератор, который может только менять описание
+        if user.has_perm("catalog.change_category"):
+            return True
+        # владелец объекта
+        return obj.owner_id == user.id
+
+    def get_queryset(self):
+        """Ограничим базовый queryset владельцем для безопасности (кроме суперпользователя/модератора)."""
+        qs = super().get_queryset()
+        user = self.request.user
+        if user.is_superuser or user.has_perm("catalog.change_category"):
+            return qs
+        return qs.filter(owner=user)
+
     def get_success_url(self):
         """URL для редиректа после успешного обновления.
-        Ведёт на детальную страницу категории.
+        Ведёт на страницу детали товара.
         """
-        return reverse("catalog:category_detail", args=[self.kwargs.get("pk")])
-
+        return reverse_lazy("catalog:category_detail", args=[self.kwargs.get("pk")])
 
     def get_form_class(self):
         user = self.request.user
@@ -273,7 +337,12 @@ class CategoryUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView
             return CategoryForm
         if user.has_perm("catalog.change_category"):
             return CategoryModeratorForm
+        # владелец может редактировать полную форму
+        obj = self.get_object()
+        if obj.owner_id == user.id:
+            return CategoryForm
         raise PermissionDenied
+
 
 class CategoryDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     """Удаление категории.
@@ -289,3 +358,24 @@ class CategoryDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView
     success_url = reverse_lazy("catalog:categories_list")
     permission_required = "catalog.delete_category"
     raise_exception = True
+
+
+    def has_permission(self):
+        """Удалять может только владелец или суперпользователь или модератор."""
+        user = self.request.user
+        obj = self.get_object()
+        if user.is_superuser:
+            return True
+        # модератор
+        if user.has_perm("catalog.delete_category"):
+            return True
+        # владелец объекта
+        return obj.owner_id == user.id
+
+    def get_queryset(self):
+        """Ограничим удаление только своих объектов (кроме суперпользователя)."""
+        qs = super().get_queryset()
+        user = self.request.user
+        if user.is_superuser:
+            return qs
+        return qs.filter(owner=user)

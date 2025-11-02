@@ -13,11 +13,13 @@
     <p>Содержание: {{ blogpost.content }}</p>
     <p>Дата создания: {{ blogpost.created_at|date:"d M Y" }}</p>
     <p>Количество просмотров: {{ blogpost.views_counter }}</p>
-    {% if perms.myblog.change_blogpost %}
-    <a href="{% url 'myblog:blogpost_update' blogpost.pk %}" class="btn btn-secondary">Редактировать</a>
-    {% endif %}
-    {% if perms.myblog.delete_blogpost %}
-    <a href="{% url 'myblog:blogpost_delete' blogpost.pk %}" class="btn btn-danger">Удалить</a>
+    {% if user.is_authenticated %}
+        {% if user.is_superuser or blogpost.author_id == user.id or perms.myblog.can_unpublish_blogpost %}
+            <a href="{% url 'myblog:blogpost_update' blogpost.pk %}" class="btn btn-secondary">Редактировать</a>
+        {% endif %}
+        {% if user.is_superuser or blogpost.author_id == user.id or perms.myblog.delete_myblog %}
+            <a href="{% url 'myblog:blogpost_delete' blogpost.pk %}" class="btn btn-danger">Удалить</a>
+        {% endif %}
     {% endif %}
     <a href="{% url 'myblog:blogposts_list' %}" class="btn btn-primary">Вернуться к списку</a>
 </div>
