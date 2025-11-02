@@ -5,7 +5,9 @@
 {% block content %}
 
 <div class="d-flex justify-content-end mb-3">
+    {% if perms.catalog.add_product %}
     <a href="{% url 'catalog:product_create' %}" class="btn btn-primary">Добавить товар</a>
+    {% endif %}
 </div>
 
 <div class="container">
@@ -15,7 +17,7 @@
             <div class="card mb-4 box-shadow h-100 d-flex flex-column">
                 <div class="card-header">
                     <h4 class="my-0 font-weight-normal">
-                        <a href="{% url 'catalog:product_detail' product.id %}" class="text-decoration-none text-black">{{ product.name }}</a>
+                        <a href="{% url 'catalog:product_detail' product.id %}" class="text-decoration-none text-black product-title">{{ product.name }}</a>
                     </h4>
                 </div>
                 <div class="card-body d-flex flex-column flex-grow-1">
@@ -32,7 +34,8 @@
                             <li>Категория: {{ product.category.name }}</li>
                             {% endif %}
                         </ul>
-                        <button type="button" class="btn btn-lg btn-block btn-outline-primary">Купить</button>
+                        <a href="#" class="btn btn-primary">Купить</a>
+                        <a href="{% url 'catalog:products_list' %}" class="btn btn-outline-primary">В корзину</a>
                     </div>
                 </div>
             </div>

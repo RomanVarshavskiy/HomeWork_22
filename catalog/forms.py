@@ -6,6 +6,7 @@
 
 Обе формы имеют преднастроенные виджеты для удобного ввода данных в админке/шаблонах.
 """
+from email.mime import image
 
 from django import forms
 from django.core.exceptions import ValidationError
@@ -81,7 +82,7 @@ class ProductForm(forms.ModelForm):
             raise ValidationError("Размер файла не должен превышать 5 МБ.")
 
         content_type = getattr(image, "content_type", "")
-        allowed_types = {"image/jpeg", "image/png"}
+        allowed_types = {"image/jpg", "image/jpeg", "image/png"}
         if content_type not in allowed_types:
             raise ValidationError("Допустимы только изображения в формате JPEG или PNG.")
 
@@ -141,3 +142,13 @@ class CategoryForm(forms.ModelForm):
         name = getattr(image, "name", "") or ""
         if not name.lower().endswith((".jpg", ".jpeg", ".png")):
             raise ValidationError("Файл должен иметь расширение .jpg, .jpeg или .png.")
+
+        return image
+
+class CategoryModeratorForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = ("description",)
+        widgets = {
+            "description": forms.Textarea(attrs={"class": "form-control", "rows": 4, "placeholder": "Описание"}),
+        }

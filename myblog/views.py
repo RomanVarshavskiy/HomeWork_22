@@ -13,7 +13,7 @@ from myblog.forms import BlogPostForm, BlogPostModeratorForm
 from myblog.models import BlogPost
 
 
-class BlogPostCreateView(LoginRequiredMixin, CreateView):
+class BlogPostCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """Создание публикации блога.
 
     Атрибуты:
@@ -27,6 +27,14 @@ class BlogPostCreateView(LoginRequiredMixin, CreateView):
     form_class = BlogPostForm
     template_name = "myblog/blogpost_form.html"
     success_url = reverse_lazy("myblog:blogposts_list")
+    permission_required = "myblog.add_blogpost"
+    raise_exception = True
+
+    def get_form_class(self):
+        user = self.request.user
+        if user.has_perm("myblog.add_blogpost"):
+            return BlogPostForm
+        raise PermissionDenied
 
 
 class BlogPostListView(ListView):
@@ -104,7 +112,7 @@ class BlogPostUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView
     model = BlogPost
     form_class = BlogPostForm
     template_name = "myblog/blogpost_form.html"
-    success_url = reverse_lazy("myblog:blogposts_list")
+    success_url = reverse_lazy("myblog:blogpost_detail")
     permission_required = "myblog.change_blogpost"
     raise_exception = True
 
@@ -121,9 +129,7 @@ class BlogPostUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView
             return BlogPostForm
         if user.has_perm("myblog.can_unpublish_blogpost"):
             return BlogPostModeratorForm
-        raise PermissionDenied('У вас нет прав изменять данные')
-
-
+        raise PermissionDenied
 
 
 class BlogPostDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):

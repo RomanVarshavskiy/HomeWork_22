@@ -11,11 +11,11 @@ from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
 
-from catalog.forms import CategoryForm, ProductForm, ProductModeratorForm
+from catalog.forms import CategoryForm, ProductForm, ProductModeratorForm, CategoryModeratorForm
 from catalog.models import Category, Contact, Product
 
 
-class ProductCreateView(LoginRequiredMixin, CreateView):
+class ProductCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """Создание товара.
 
     Атрибуты:
@@ -29,6 +29,14 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
     form_class = ProductForm
     template_name = "catalog/product_form.html"
     success_url = reverse_lazy("catalog:products_list")
+    permission_required = "catalog.add_product"
+    raise_exception = True
+
+    def get_form_class(self):
+        user = self.request.user
+        if user.has_perm("catalog.add_product"):
+            return ProductForm
+        raise PermissionDenied
 
 
 class ProductListView(ListView):
@@ -83,7 +91,7 @@ class ProductUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView)
     model = Product
     form_class = ProductForm
     template_name = "catalog/product_form.html"
-    success_url = reverse_lazy("catalog:products_list")
+    success_url = reverse_lazy("catalog:product_detail")
     permission_required = "catalog.change_product"
     raise_exception = True
 
@@ -92,7 +100,7 @@ class ProductUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView)
         """URL для редиректа после успешного обновления.
         Ведёт на страницу детали товара.
         """
-        return reverse_lazy("catalog:product_detail", args={self.kwargs.get("pk")})
+        return reverse_lazy("catalog:product_detail", args=[self.kwargs.get("pk")])
 
     def get_form_class(self):
         user = self.request.user
@@ -100,7 +108,7 @@ class ProductUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView)
             return ProductForm
         if user.has_perm("catalog.can_unpublish_product"):
             return ProductModeratorForm
-        raise PermissionDenied('У вас нет прав изменять данные')
+        raise PermissionDenied
 
 
 class ProductDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
@@ -183,7 +191,7 @@ class ContactsView(ListView):
         return HttpResponse(f"Спасибо {name}. Сообщение успешно отправлено")
 
 
-class CategoryCreateView(LoginRequiredMixin, CreateView):
+class CategoryCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     """Создание категории.
 
     Атрибуты:
@@ -197,6 +205,14 @@ class CategoryCreateView(LoginRequiredMixin, CreateView):
     form_class = CategoryForm
     template_name = "catalog/category_form.html"
     success_url = reverse_lazy("catalog:categories_list")
+    permission_required = "catalog.add_category"
+    raise_exception = True
+
+    def get_form_class(self):
+        user = self.request.user
+        if user.has_perm("catalog.add_category"):
+            return CategoryForm
+        raise PermissionDenied
 
 
 class CategoryListView(ListView):
@@ -227,7 +243,7 @@ class CategoryDetailView(LoginRequiredMixin, DetailView):
     context_object_name = "category"
 
 
-class CategoryUpdateView(LoginRequiredMixin, UpdateView):
+class CategoryUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """Редактирование категории.
 
     Атрибуты:
@@ -240,16 +256,26 @@ class CategoryUpdateView(LoginRequiredMixin, UpdateView):
     model = Category
     form_class = CategoryForm
     template_name = "catalog/category_form.html"
-    success_url = reverse_lazy("catalog:categories_list")
+    success_url = reverse_lazy("catalog:category_detail")
+    permission_required = "catalog.change_category"
+    raise_exception = True
 
     def get_success_url(self):
         """URL для редиректа после успешного обновления.
         Ведёт на детальную страницу категории.
         """
-        return reverse("catalog:category_detail", args={self.kwargs.get("pk")})
+        return reverse("catalog:category_detail", args=[self.kwargs.get("pk")])
 
 
-class CategoryDeleteView(LoginRequiredMixin, DeleteView):
+    def get_form_class(self):
+        user = self.request.user
+        if user.is_superuser:
+            return CategoryForm
+        if user.has_perm("catalog.change_category"):
+            return CategoryModeratorForm
+        raise PermissionDenied
+
+class CategoryDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     """Удаление категории.
 
     Атрибуты:
@@ -261,3 +287,5 @@ class CategoryDeleteView(LoginRequiredMixin, DeleteView):
     model = Category
     template_name = "catalog/category_confirm_delete.html"
     success_url = reverse_lazy("catalog:categories_list")
+    permission_required = "catalog.delete_category"
+    raise_exception = True

@@ -47,4 +47,4 @@ class BlogPost(models.Model):
 
     def __str__(self):
         """Строковое представление модели: заголовок публикации."""
-        return {self.title}
+        return self.title
