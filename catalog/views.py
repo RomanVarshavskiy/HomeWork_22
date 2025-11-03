@@ -167,7 +167,7 @@ class ProductDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView)
         """Ограничим удаление только своих объектов (кроме суперпользователя)."""
         qs = super().get_queryset()
         user = self.request.user
-        if user.is_superuser:
+        if user.is_superuser or user.has_perm("catalog.delete_product"):
             return qs
         return qs.filter(owner=user)
 
@@ -376,6 +376,6 @@ class CategoryDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView
         """Ограничим удаление только своих объектов (кроме суперпользователя)."""
         qs = super().get_queryset()
         user = self.request.user
-        if user.is_superuser:
+        if user.is_superuser or user.has_perm("catalog.delete_category"):
             return qs
         return qs.filter(owner=user)

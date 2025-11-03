@@ -6,7 +6,9 @@
 {% include 'myblog/include/header.html' %}
 
 <div class="d-flex justify-content-end mb-3">
+    {% if user.is_authenticated %}
     <a href="{% url 'myblog:blogpost_create' %}" class="btn btn-primary">Добавить статью</a>
+    {% endif %}
 </div>
 
 <div class="container">
@@ -20,11 +22,13 @@
             </a>
             {% endif %}
             <span>
-                {% if perms.myblog.change_blogpost %}
-                <a href="{% url 'myblog:blogpost_update' blogpost.pk %}" class="btn btn-secondary btn-sm mr-2">Редактировать</a>
-                {% endif %}
-                {% if perms.myblog.delete_blogpost %}
-                <a href="{% url 'myblog:blogpost_delete' blogpost.pk %}" class="btn btn-danger btn-sm">Удалить</a>
+                {% if user.is_authenticated %}
+                    {% if user.is_superuser or blogpost.author_id == user.id or perms.myblog.can_unpublish_blogpost %}
+                        <a href="{% url 'myblog:blogpost_update' blogpost.pk %}" class="btn btn-secondary btn-sm mr-2">Редактировать</a>
+                    {% endif %}
+                    {% if user.is_superuser or blogpost.author_id == user.id or perms.myblog.delete_blogpost %}
+                        <a href="{% url 'myblog:blogpost_delete' blogpost.pk %}" class="btn btn-danger btn-sm">Удалить</a>
+                    {% endif %}
                 {% endif %}
             </span>
         </li>

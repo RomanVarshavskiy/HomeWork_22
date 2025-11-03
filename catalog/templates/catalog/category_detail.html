@@ -12,7 +12,7 @@
     <p>Категория: {{ category.name }}</p>
     <p>Описание: {{ category.description }}</p>
     {% if user.is_authenticated %}
-        {% if user.is_superuser or category.owner_id == user.id or perms.catalog.can_unpublish_category %}
+        {% if user.is_superuser or category.owner_id == user.id or perms.catalog.change_category %}
             <a href="{% url 'catalog:category_update' category.pk %}" class="btn btn-secondary">Редактировать</a>
         {% endif %}
         {% if user.is_superuser or category.owner_id == user.id or perms.catalog.delete_category %}

@@ -17,7 +17,7 @@
         {% if user.is_superuser or blogpost.author_id == user.id or perms.myblog.can_unpublish_blogpost %}
             <a href="{% url 'myblog:blogpost_update' blogpost.pk %}" class="btn btn-secondary">Редактировать</a>
         {% endif %}
-        {% if user.is_superuser or blogpost.author_id == user.id or perms.myblog.delete_myblog %}
+        {% if user.is_superuser or blogpost.author_id == user.id or perms.myblog.delete_blogpost %}
             <a href="{% url 'myblog:blogpost_delete' blogpost.pk %}" class="btn btn-danger">Удалить</a>
         {% endif %}
     {% endif %}

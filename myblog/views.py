@@ -126,7 +126,7 @@ class BlogPostUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView
         if user.has_perm("myblog.can_unpublish_blogpost"):
             return True
         # владелец объекта
-        return obj.owner_id == user.id
+        return obj.author_id == user.id
 
     def get_queryset(self):
         """Ограничим базовый queryset владельцем для безопасности (кроме суперпользователя/модератора)."""
@@ -134,7 +134,7 @@ class BlogPostUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView
         user = self.request.user
         if user.is_superuser or user.has_perm("myblog.can_unpublish_blogpost"):
             return qs
-        return qs.filter(owner=user)
+        return qs.filter(author=user)
 
     def get_success_url(self):
         """URL для редиректа после успешного обновления.
@@ -186,6 +186,6 @@ class BlogPostDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView
         """Ограничим удаление только своих объектов (кроме суперпользователя)."""
         qs = super().get_queryset()
         user = self.request.user
-        if user.is_superuser:
+        if user.is_superuser or user.has_perm("myblog.delete_blogpost"):
             return qs
-        return qs.filter(owner=user)
+        return qs.filter(author=user)
