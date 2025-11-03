@@ -123,7 +123,7 @@ class BlogPostUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView
         if user.is_superuser:
             return True
         # модератор, который может только менять публикацию
-        if user.has_perm("myblog.can_unpublish_blogpost"):
+        if user.has_perm("myblog.change_blogpost"):
             return True
         # владелец объекта
         return obj.author_id == user.id
@@ -132,7 +132,7 @@ class BlogPostUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView
         """Ограничим базовый queryset владельцем для безопасности (кроме суперпользователя/модератора)."""
         qs = super().get_queryset()
         user = self.request.user
-        if user.is_superuser or user.has_perm("myblog.can_unpublish_blogpost"):
+        if user.is_superuser or user.has_perm("myblog.change_blogpost"):
             return qs
         return qs.filter(author=user)
 
@@ -146,7 +146,7 @@ class BlogPostUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView
         user = self.request.user
         if user.is_superuser:
             return BlogPostForm
-        if user.has_perm("myblog.can_unpublish_blogpost"):
+        if user.has_perm("myblog.change_blogpost"):
             return BlogPostModeratorForm
         # владелец может редактировать полную форму
         obj = self.get_object()

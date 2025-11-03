@@ -52,9 +52,7 @@ class BlogPost(models.Model):
         verbose_name = "Статья"
         verbose_name_plural = "Статьи"
         ordering = ["title", "created_at", "views_counter"]
-        permissions = [
-            ("can_unpublish_blogpost", "Can unpublish blogpost"),
-        ]
+
 
     def __str__(self):
         """Строковое представление модели: заголовок публикации."""
