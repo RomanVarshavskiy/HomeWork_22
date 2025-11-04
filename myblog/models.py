@@ -2,6 +2,8 @@
 
 from django.db import models
 
+from users.models import CustomUser
+
 
 class BlogPost(models.Model):
     """Модель BlogPost с полями для хранения контента, изображений-превью,
@@ -29,6 +31,15 @@ class BlogPost(models.Model):
         default=0, verbose_name="Счетчик просмотров", help_text="Укажите количество просмотров"
     )
 
+    author = models.ForeignKey(
+        CustomUser,
+        verbose_name="Автор",
+        help_text="Укажите автора статьи",
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
+    )
+
     class Meta:
         """Метаданные модели.
 
@@ -42,6 +53,7 @@ class BlogPost(models.Model):
         verbose_name_plural = "Статьи"
         ordering = ["title", "created_at", "views_counter"]
 
+
     def __str__(self):
         """Строковое представление модели: заголовок публикации."""
-        return {self.title}
+        return self.title
