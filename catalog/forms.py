@@ -6,6 +6,7 @@
 
 Обе формы имеют преднастроенные виджеты для удобного ввода данных в админке/шаблонах.
 """
+from email.mime import image
 
 from django import forms
 from django.core.exceptions import ValidationError
@@ -43,7 +44,7 @@ class ProductForm(forms.ModelForm):
         """
 
         model = Product
-        exclude = ["views_counter"]
+        exclude = ["views_counter", "owner"]
         widgets = {
             "name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Название"}),
             "description": forms.Textarea(attrs={"class": "form-control", "rows": 4, "placeholder": "Описание"}),
@@ -52,44 +53,8 @@ class ProductForm(forms.ModelForm):
             "price": forms.NumberInput(attrs={"class": "form-control", "step": "1.00"}),
             "created_at": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
             "updated_at": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
+            "is_published": forms.CheckboxInput(attrs={"class": "form-check-input"}),
         }
-
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #
-    #     self.fields['name'].widget.attrs.update({
-    #         "class": "form-control",
-    #         "placeholder": "Название"
-    #     })
-    #
-    #     self.fields['description'].widget.attrs.update({
-    #         "class": "form-control",
-    #         "rows": 4,
-    #         "placeholder": "Описание"
-    #     })
-    #
-    #     self.fields['image'].widget.attrs.update({
-    #         "class": "form-control",
-    #     })
-    #
-    #     self.fields['category'].widget.attrs.update({
-    #         "class": "form-select",
-    #     })
-    #
-    #     self.fields['price'].widget.attrs.update({
-    #         "class": "form-control",
-    #         "step": "1.00"
-    #     })
-    #
-    #     self.fields['created_at'].widget.attrs.update({
-    #         "class": "form-control",
-    #         "type": "date"
-    #     })
-    #
-    #     self.fields['updated_at'].widget.attrs.update({
-    #         "class": "form-control",
-    #         "type": "date"
-    #     })
 
     def clean(self):
         cleaned_data = super().clean()
@@ -117,7 +82,7 @@ class ProductForm(forms.ModelForm):
             raise ValidationError("Размер файла не должен превышать 5 МБ.")
 
         content_type = getattr(image, "content_type", "")
-        allowed_types = {"image/jpeg", "image/png"}
+        allowed_types = {"image/jpg", "image/jpeg", "image/png"}
         if content_type not in allowed_types:
             raise ValidationError("Допустимы только изображения в формате JPEG или PNG.")
 
@@ -126,6 +91,16 @@ class ProductForm(forms.ModelForm):
             raise ValidationError("Файл должен иметь расширение .jpg, .jpeg или .png.")
 
         return image
+
+class ProductModeratorForm(forms.ModelForm):
+
+    class Meta:
+
+        model = Product
+        fields = ("is_published",)
+        widgets = {
+            "is_published": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+        }
 
 
 class CategoryForm(forms.ModelForm):
@@ -167,3 +142,13 @@ class CategoryForm(forms.ModelForm):
         name = getattr(image, "name", "") or ""
         if not name.lower().endswith((".jpg", ".jpeg", ".png")):
             raise ValidationError("Файл должен иметь расширение .jpg, .jpeg или .png.")
+
+        return image
+
+class CategoryModeratorForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = ("description",)
+        widgets = {
+            "description": forms.Textarea(attrs={"class": "form-control", "rows": 4, "placeholder": "Описание"}),
+        }

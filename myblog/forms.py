@@ -21,7 +21,7 @@ class BlogPostForm(forms.ModelForm):
         """
 
         model = BlogPost
-        exclude = ("views_counter",)
+        exclude = ("views_counter", "author")
         widgets = {
             "title": forms.TextInput(attrs={"class": "form-control", "placeholder": "Заголовок"}),
             "content": forms.Textarea(attrs={"class": "form-control", "rows": 4, "placeholder": "Содержимое"}),
@@ -56,3 +56,16 @@ class BlogPostForm(forms.ModelForm):
         name = getattr(image, "name", "") or ""
         if not name.lower().endswith((".jpg", ".jpeg", ".png")):
             raise ValidationError("Файл должен иметь расширение .jpg, .jpeg или .png.")
+
+
+class BlogPostModeratorForm(forms.ModelForm):
+
+    class Meta:
+        model = BlogPost
+        fields = ("title", "content", "preview_image", "is_published",)
+        widgets = {
+            "title": forms.TextInput(attrs={"class": "form-control", "placeholder": "Заголовок"}),
+            "content": forms.Textarea(attrs={"class": "form-control", "rows": 4, "placeholder": "Содержимое"}),
+            "preview_image": forms.ClearableFileInput(attrs={"class": "form-control"}),
+            "is_published": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+        }

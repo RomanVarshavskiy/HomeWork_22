@@ -2,6 +2,8 @@
 
 from django.db import models
 
+from users.models import CustomUser
+
 
 class Product(models.Model):
     """Товар каталога."""
@@ -32,9 +34,18 @@ class Product(models.Model):
         null=True,
         blank=True,  # , auto_now=True
     )
-
     views_counter = models.PositiveIntegerField(
         default=0, verbose_name="Счетчик просмотров", help_text="Укажите количество просмотров"
+    )
+    is_published = models.BooleanField(default=False)
+
+    owner = models.ForeignKey(
+        CustomUser,
+        verbose_name="Владелец",
+        help_text="Укажите владельца товара",
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
     )
 
     class Meta:
@@ -49,6 +60,9 @@ class Product(models.Model):
         verbose_name = "Товар"
         verbose_name_plural = "Товары"
         ordering = ["name", "category", "price", "updated_at"]
+        permissions = [
+            ("can_unpublish_product", "Can unpublish product"),
+        ]
 
     def __str__(self):
         """Строковое представление товара: '<Категория>: <Наименование>'."""
@@ -64,6 +78,15 @@ class Category(models.Model):
     )
     image = models.ImageField(
         upload_to="catalog/image", verbose_name="Изображение", help_text="Загрузите изображение", null=True, blank=True
+    )
+
+    owner = models.ForeignKey(
+        CustomUser,
+        verbose_name="Владелец",
+        help_text="Укажите владельца",
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
     )
 
     class Meta:
