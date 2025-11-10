@@ -13,6 +13,7 @@ from django.views.generic import CreateView, DeleteView, DetailView, ListView, U
 
 from catalog.forms import CategoryForm, ProductForm, ProductModeratorForm, CategoryModeratorForm
 from catalog.models import Category, Contact, Product
+from catalog.services import get_products_from_cache
 
 
 class ProductCreateView(LoginRequiredMixin, CreateView):
@@ -52,6 +53,8 @@ class ProductListView(ListView):
     template_name = "catalog/products_list.html"
     context_object_name = "products"
 
+    def get_queryset(self):
+        return get_products_from_cache()
 
 class ProductDetailView(LoginRequiredMixin, DetailView):
     """Детальная страница товара.
