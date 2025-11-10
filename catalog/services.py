@@ -1,6 +1,6 @@
 from django.core.cache import cache
 
-from catalog.models import Product
+from catalog.models import Product, Category
 from config.settings import CACHE_ENABLED
 
 
@@ -15,3 +15,7 @@ def get_products_from_cache():
     products = Product.objects.all()
     cache.set(key, products)
     return products
+
+def get_category_products(category_id):
+    return Product.objects.filter(category_id=category_id)
+
