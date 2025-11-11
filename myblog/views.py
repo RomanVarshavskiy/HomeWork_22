@@ -11,6 +11,7 @@ from django.views.generic import CreateView, DeleteView, DetailView, ListView, U
 
 from myblog.forms import BlogPostForm, BlogPostModeratorForm
 from myblog.models import BlogPost
+from myblog.services import get_blogpost_from_cache
 
 
 class BlogPostCreateView(LoginRequiredMixin, CreateView):
@@ -51,12 +52,8 @@ class BlogPostListView(ListView):
     context_object_name = "blogposts"
 
     def get_queryset(self):
-        """Возвращает QuerySet только опубликованных записей.
-
-        Возврат:
-            QuerySet[BlogPost]: отфильтрованные записи с is_published=True.
-        """
-        return BlogPost.objects.filter(is_published=True)
+        """Возвращает QuerySet из кэша."""
+        return get_blogpost_from_cache
 
 
 class BlogPostDetailView(LoginRequiredMixin, DetailView):

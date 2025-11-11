@@ -79,7 +79,6 @@ class Category(models.Model):
     image = models.ImageField(
         upload_to="catalog/image", verbose_name="Изображение", help_text="Загрузите изображение", null=True, blank=True
     )
-
     owner = models.ForeignKey(
         CustomUser,
         verbose_name="Владелец",
