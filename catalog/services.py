@@ -17,5 +17,5 @@ def get_products_from_cache():
     return products
 
 def get_category_products(category_id):
-    return Product.objects.filter(category_id=category_id)
+    return Product.objects.filter(category__id=category_id)
 
